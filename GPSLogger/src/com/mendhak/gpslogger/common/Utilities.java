@@ -124,7 +124,7 @@ public class Utilities
 
         AppSettings.setLogToKml(prefs.getBoolean("log_kml", false));
 
-        AppSettings.setLogToGpx(prefs.getBoolean("log_gpx", false));
+        AppSettings.setLogToGpx(prefs.getBoolean("log_gpx", true));
 
         AppSettings.setLogToIgc(prefs.getBoolean("log_igc", false));
         AppSettings.setIgcPrivateKey(context.getString(R.string.igc_private_key));

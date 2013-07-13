@@ -23,6 +23,7 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.*;
+import android.content.pm.PackageInfo;
 import android.location.Location;
 import android.net.Uri;
 import android.os.Bundle;
@@ -31,10 +32,12 @@ import android.os.IBinder;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
+import android.preference.PreferenceManager;
 import android.view.*;
 import android.widget.*;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.CompoundButton.OnCheckedChangeListener;
+import com.actionbarsherlock.app.SherlockActivity;
 import com.actionbarsherlock.app.SherlockFragmentActivity;
 import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuItem;
@@ -58,7 +61,10 @@ import com.mendhak.gpslogger.senders.opengts.OpenGTSActivity;
 import net.kataplop.gpslogger.R;
 
 import java.io.File;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Comparator;
+import java.util.List;
 
 public class GpsMainActivity extends SherlockFragmentActivity implements OnCheckedChangeListener,
         IGpsLoggerServiceClient, View.OnClickListener, IActionListener, IWidgetContainer
@@ -130,6 +136,40 @@ public class GpsMainActivity extends SherlockFragmentActivity implements OnCheck
         //GetPreferences();
 
         StartAndBindService();
+        ShowWhatsNew();
+    }
+
+    private void ShowWhatsNew()
+    {
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+        int currentVersionNumber = 0;
+
+        int savedVersionNumber = prefs.getInt("SAVED_VERSION", 0);
+        String gdocsKey = prefs.getString("GDOCS_ACCOUNT_NAME", "");
+
+        try
+        {
+            PackageInfo pi = getPackageManager().getPackageInfo(getPackageName(), 0);
+            currentVersionNumber = pi.versionCode;
+        }
+        catch (Exception e) {}
+
+        if (currentVersionNumber > savedVersionNumber)
+        {
+            if(!Utilities.IsNullOrEmpty(gdocsKey))
+            {
+                Utilities.MsgBox("Google Docs users, please note",
+                        "A few weeks ago, Google Docs upload stopped working due to Google breaking an API.\r\n\r\n " +
+                        "I've had to rewrite this feature, but you will need to reauthenticate. \r\n\r\n " +
+                        "To do this, go to the Google Docs settings, clear your authorization and reauthorize yourself. \r\n\r\n " +
+                        "Also note that phones without Google Play can no longer use the Google Docs upload feature.\r\n\r\n" +
+                        "Please report on Github if there are any problems with the Google Docs upload.\r\n", this);
+            }
+
+            SharedPreferences.Editor editor   = prefs.edit();
+            editor.putInt("SAVED_VERSION", currentVersionNumber);
+            editor.commit();
+        }
     }
 
     @Override
@@ -654,10 +694,8 @@ public class GpsMainActivity extends SherlockFragmentActivity implements OnCheck
 
                 File[] enumeratedFiles = gpxFolder.listFiles();
 
-                Arrays.sort(enumeratedFiles, new Comparator<File>()
-                {
-                    public int compare(File f1, File f2)
-                    {
+                Arrays.sort(enumeratedFiles, new Comparator<File>() {
+                    public int compare(File f1, File f2) {
                         return -1 * Long.valueOf(f1.lastModified()).compareTo(f2.lastModified());
                     }
                 });
