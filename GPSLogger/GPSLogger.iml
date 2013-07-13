@@ -28,7 +28,7 @@
       <excludeFolder url="file://$MODULE_DIR$/target/generated-sources/extracted-dependencies" />
     </content>
     <orderEntry type="sourceFolder" forTests="false" />
-    <orderEntry type="jdk" jdkName="Maven Android 4.1.2 Platform (1)" jdkType="Android SDK" />
+    <orderEntry type="jdk" jdkName="Maven Android 4.1.2 Platform" jdkType="Android SDK" />
     <orderEntry type="library" name="google-play-services" level="project" />
     <orderEntry type="module" module-name="google-play-services_lib" />
     <orderEntry type="library" scope="PROVIDED" name="Maven: com.google.android:android:4.1.1.4" level="project" />
