@@ -7,8 +7,8 @@ android {
     defaultConfig {
         minSdkVersion 8
         targetSdkVersion 19
-        versionCode 20140617
-        versionName "20140617"
+        versionCode 20150329
+        versionName "20150329"
     }
 
      signingConfigs {
@@ -23,14 +23,12 @@ android {
 
     buildTypes {
         releaseSigned {
-            runProguard false
-            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.txt'
+
             signingConfig signingConfigs.release
         }
 
         releaseUnsigned {
-            runProguard false
-            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.txt'
+
         }
 
     }
