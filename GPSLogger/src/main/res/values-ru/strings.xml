@@ -227,6 +227,12 @@
   <string name="started_waiting">GPS запущен, ожидаем координаты</string>
   <string name="gps_stopped">GPS приостановлен</string>
   <string name="stopped">Остановлено</string>
+
+  <string name="abst_logger_minbufsize_title">Групповая отправка точек</string>
+  <string name="abst_logger_minbufsize_summary">Минимальное количество точек в буфере для начала отправки</string>
+  <string name="abst_logger_minbufsize_dialog_title">Количество точек в буфере</string>
+  <string name="abst_logger_minbufsize_hint">Количество точек</string>
+
   <string name="osm_setup_title">OpenStreetMap</string>
   <string name="osm_setup_summary">Добавляйте теги, описания GPS трекам</string>
   <string name="osm_preferences_title">Настройки OpenStreetMap</string>

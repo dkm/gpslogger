@@ -5,6 +5,7 @@ import android.location.Location;
 import android.os.AsyncTask;
 import android.os.Handler;
 
+import com.mendhak.gpslogger.common.AppSettings;
 import com.mendhak.gpslogger.common.IActionListener;
 import com.mendhak.gpslogger.common.Utilities;
 import com.mendhak.gpslogger.loggers.utils.LocationBuffer;
@@ -58,6 +59,12 @@ public abstract class AbstractLiveLogger extends AbstractLogger {
                 int i=0;
                 int sent=0;
                 int maxtry=3;
+                int minbufsize= AppSettings.getALMinBufSize();
+                // TODO: ignore skipping by minbufsize using timeout (got from user settings)
+                if ( bufsize < minbufsize ) {
+                    Utilities.LogDebug(name + " flushing aborted: minbufsize=" + minbufsize);
+                    return null;
+                }
                 do {
                     sent=0;
                     for (i = 0; i < bufsize; i++) {

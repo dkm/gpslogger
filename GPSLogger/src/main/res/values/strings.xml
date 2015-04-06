@@ -294,7 +294,10 @@
     <string name="gps_stopped">GPS paused</string>
     <string name="stopped">Stopped</string>
 
-
+    <string name="abst_logger_minbufsize_title">Send points by group</string>
+    <string name="abst_logger_minbufsize_summary">Minimum number of points in buffer to start sending</string>
+    <string name="abst_logger_minbufsize_dialog_title">Number of points in buffer</string>
+    <string name="abst_logger_minbufsize_hint">Number of points</string>
 
     <string name="osm_setup_title">OpenStreetMap</string>
     <string name="osm_setup_summary">Set tags, description, visibility and authorization for uploading GPS Traces

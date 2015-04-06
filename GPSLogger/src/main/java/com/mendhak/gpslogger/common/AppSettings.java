@@ -99,6 +99,7 @@ public class AppSettings extends Application
     private static boolean isStaticFile;
     private static String msgTemplate;
     private static int critBattLevel;
+    private static int ALMinBufSize;
 
     static void setVersionName(String versionName){
         AppSettings.versionName = versionName;
@@ -901,5 +902,15 @@ public class AppSettings extends Application
     public static int getCritBattLevel()
     {
         return critBattLevel;
+    }
+
+    public static void setALMinBufSize(int minbufsize)
+    {
+        AppSettings.ALMinBufSize = minbufsize;
+    }
+
+    public static int getALMinBufSize()
+    {
+        return ALMinBufSize;
     }
 }

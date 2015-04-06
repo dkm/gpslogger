@@ -81,6 +81,17 @@
                 android:key="livetrack24_setup">
                 <intent android:action="com.mendhak.gpslogger.LIVETRACK24_SETUP" />
             </Preference>
+
+            <EditTextPreference
+                android:key="abst_logger_minbufsize"
+                android:title="@string/abst_logger_minbufsize_title"
+                android:summary="@string/abst_logger_minbufsize_summary"
+                android:dialogTitle="@string/abst_logger_minbufsize_dialog_title"
+                android:numeric="integer"
+                android:maxLength="3"
+                android:hint="@string/abst_logger_minbufsize_hint"
+                android:defaultValue="1" />
+
         </PreferenceScreen>
 
         <PreferenceScreen

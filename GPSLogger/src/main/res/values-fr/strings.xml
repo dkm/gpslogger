@@ -184,6 +184,12 @@
   <string name="started_waiting">GPS a démarré, en attente de la position</string>
   <string name="gps_stopped">GPS arrêté</string>
   <string name="stopped">Arrêté</string>
+
+  <string name="abst_logger_minbufsize_title">Envoi de point groupé</string>
+  <string name="abst_logger_minbufsize_summary">Nombre de points minimal dans le tampon de memoire pour commencer envoi</string>
+  <string name="abst_logger_minbufsize_dialog_title">Nombre de points</string>
+  <string name="abst_logger_minbufsize_hint">Nombre de points</string>
+
   <string name="osm_setup_title">OpenStreetMap</string>
   <string name="osm_setup_summary">Définition de : balises, description, visibilité et autorisations pour le téléchargement des traces GPS     </string>
   <string name="osm_preferences_title">Préférences d\'OpenStreetMap</string>
