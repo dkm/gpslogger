@@ -5,7 +5,7 @@ import android.location.Location;
 import android.os.AsyncTask;
 import android.os.Handler;
 
-import com.mendhak.gpslogger.common.AppSettings;
+// import com.mendhak.gpslogger.common.AppSettings;
 import com.mendhak.gpslogger.common.IActionListener;
 import com.mendhak.gpslogger.common.Utilities;
 import com.mendhak.gpslogger.loggers.utils.LocationBuffer;
@@ -17,6 +17,8 @@ public abstract class AbstractLiveLogger extends AbstractLogger {
     protected final static long maxWaitUpload = 10000; // Upload will be failed if longs more than maxWaitUpload millisecsec
     protected long timeStartUpload;
     protected final static int sleepTimeUpload = 100;  // Time to sleep for upload thread waiting for upload (one cycle)
+    protected int minbufsize=0; // Should be set by child class if needed
+    protected int MAX_TRY=3;
 
     private Runnable flusher;
 // **** Handler removed by Peter 01/11/2014 - replaced by execAsyncFlush() call in Write method
@@ -58,8 +60,7 @@ public abstract class AbstractLiveLogger extends AbstractLogger {
                 Utilities.LogDebug(name + " flushing buffer (" + bufsize + ")");
                 int i=0;
                 int sent=0;
-                int maxtry=3;
-                int minbufsize= AppSettings.getALMinBufSize();
+                int maxtry=MAX_TRY;
                 // TODO: ignore skipping by minbufsize using timeout (got from user settings)
                 if ( bufsize < minbufsize ) {
                     Utilities.LogDebug(name + " flushing aborted: minbufsize=" + minbufsize);

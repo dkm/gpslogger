@@ -28,6 +28,7 @@ package com.mendhak.gpslogger.loggers;
 import android.location.Location;
 import android.os.SystemClock;
 
+import com.mendhak.gpslogger.common.AppSettings;
 import com.mendhak.gpslogger.common.IActionListener;
 import com.mendhak.gpslogger.common.Utilities;
 import com.mendhak.gpslogger.loggers.utils.LocationBuffer;
@@ -143,6 +144,7 @@ public class SkyLinesLogger extends AbstractLiveLogger
             throws SocketException, UnknownHostException
     {
         super(intervals,minDistance);
+        this.minbufsize= AppSettings.getALMinBufSize();
         Utilities.LogDebug("Skylines constructor");
         this.key = key;
         this.intervalMS = intervals * 1000;

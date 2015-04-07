@@ -138,6 +138,8 @@ public class LiveTrack24FileLogger extends AbstractLiveLogger {
         super(expectedInterval,minDistance);
         this.ourVersion = AppSettings.getVersionName();
         this.vehicleName = AppSettings.getGliderName();
+        this.minbufsize= AppSettings.getALMinBufSize();
+
         if (this.vehicleName == null || this.vehicleName.trim().equals("")){
             this.vehicleName = "none";
         }

@@ -62,6 +62,7 @@ public class OpenGTSLogger extends AbstractLiveLogger
     public OpenGTSLogger(int minsec, int mindist)
     {
         super(minsec,mindist);
+        this.minbufsize= AppSettings.getALMinBufSize();
     }
 
     @Override
