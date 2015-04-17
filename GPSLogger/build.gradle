@@ -7,8 +7,8 @@ android {
     defaultConfig {
         minSdkVersion 9
         targetSdkVersion 19
-        versionCode 20150406
-        versionName "20150406FT"
+        versionCode 20150417
+        versionName "20150417FT"
     }
 
      signingConfigs {

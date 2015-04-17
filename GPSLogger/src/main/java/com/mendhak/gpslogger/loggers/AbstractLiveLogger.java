@@ -19,6 +19,7 @@ public abstract class AbstractLiveLogger extends AbstractLogger {
     protected final static int sleepTimeUpload = 100;  // Time to sleep for upload thread waiting for upload (one cycle)
     protected int minbufsize=0; // Should be set by child class if needed
     protected int MAX_TRY=3;
+    protected int MAX_BUFSIZE=32;
 
     private Runnable flusher;
 // **** Handler removed by Peter 01/11/2014 - replaced by execAsyncFlush() call in Write method
@@ -62,7 +63,7 @@ public abstract class AbstractLiveLogger extends AbstractLogger {
                 int sent=0;
                 int maxtry=MAX_TRY;
                 // TODO: ignore skipping by minbufsize using timeout (got from user settings)
-                if ( bufsize < minbufsize ) {
+                if ( (bufsize < minbufsize) && (!loggerIsClosing) ) {
                     Utilities.LogDebug(name + " flushing aborted: minbufsize=" + minbufsize);
                     return null;
                 }
@@ -133,6 +134,12 @@ public abstract class AbstractLiveLogger extends AbstractLogger {
     {
 //        final long now = SystemClock.elapsedRealtime();
 //        calendar.setTimeInMillis(loc.getTime());
+        int bufsize=loc_buffer.size();
+        if (bufsize > MAX_BUFSIZE) {
+            Utilities.LogDebug(name  + " cannot push: bufsize= " + bufsize + " > "+MAX_BUFSIZE);
+            Utilities.LogDebug(name  + " deleting the oldest point");
+            loc_buffer.pop();
+        }
         SetLatestTimeStamp(System.currentTimeMillis());
         // get time from system, not location: prevent emulator problem with wrong date
         // in simulated location
