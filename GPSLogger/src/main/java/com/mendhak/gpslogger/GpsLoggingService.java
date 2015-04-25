@@ -68,8 +68,8 @@ public class GpsLoggingService extends Service implements IActionListener
     // ---------------------------------------------------
     // Helpers and managers
     // ---------------------------------------------------
-    private GeneralLocationListener gpsLocationListener;
-    private GeneralLocationListener towerLocationListener;
+    private static GeneralLocationListener gpsLocationListener;
+    private static GeneralLocationListener towerLocationListener;
     LocationManager gpsLocationManager;
     private LocationManager towerLocationManager;
 
@@ -123,6 +123,7 @@ public class GpsLoggingService extends Service implements IActionListener
     {
         super.onDestroy();
         Utilities.LogWarning("GpsLoggingService is being destroyed by Android OS.");
+        StopGpsManager();
         mainServiceClient = null;
     }
 
@@ -424,6 +425,7 @@ public class GpsLoggingService extends Service implements IActionListener
         closeLoggers();
 
         Session.setStarted(false);
+        StopGpsManager();
         // Email log file before setting location info to null
         AutoSendLogFileOnStop();
         CancelAlarm();
@@ -432,7 +434,6 @@ public class GpsLoggingService extends Service implements IActionListener
 
         RemoveNotification();
         StopAlarm();
-        StopGpsManager();
         StopMainActivity();
     }
 
@@ -594,17 +595,17 @@ public class GpsLoggingService extends Service implements IActionListener
 
         Utilities.LogDebug("GpsLoggingService.StopGpsManager");
 
-        if (towerLocationListener != null)
+        if ( (towerLocationListener != null) && (towerLocationManager != null) )
         {
             Utilities.LogDebug("Removing towerLocationManager updates");
             towerLocationManager.removeUpdates(towerLocationListener);
         }
 
-        if (gpsLocationListener != null)
+        if ( (gpsLocationListener != null) && (gpsLocationManager != null) )
         {
             Utilities.LogDebug("Removing gpsLocationManager updates");
-            gpsLocationManager.removeUpdates(gpsLocationListener);
-            gpsLocationManager.removeGpsStatusListener(gpsLocationListener);
+                gpsLocationManager.removeUpdates(gpsLocationListener);
+                gpsLocationManager.removeGpsStatusListener(gpsLocationListener);
         }
 
         SetStatus(getString(R.string.stopped));
@@ -689,7 +690,7 @@ public class GpsLoggingService extends Service implements IActionListener
     }
 
     /**
-     * Notifies main form that logging has stopped
+     * Notifies main form that logging has stopped (change interface status)
      */
     void StopMainActivity()
     {

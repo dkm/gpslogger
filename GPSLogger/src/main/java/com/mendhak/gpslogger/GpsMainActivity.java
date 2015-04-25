@@ -386,7 +386,7 @@ public class GpsMainActivity extends SherlockFragmentActivity implements OnCheck
     {
 
         Utilities.LogDebug("GpsMainActivity.onPause");
-        StopAndUnbindServiceIfRequired();
+//        StopAndUnbindServiceIfRequired();
         super.onPause();
     }
 
@@ -408,13 +408,13 @@ public class GpsMainActivity extends SherlockFragmentActivity implements OnCheck
     {
         Utilities.LogDebug("GpsMainActivity.onCheckedChanged");
 
-        if (isChecked)
+        if (isChecked)  // Start
         {
             GetPreferences();
             loggingService.SetupAutoSendTimers();
             loggingService.StartLogging();
         }
-        else
+        else            // Stop
         {
             loggingService.StopLogging();
             ShowPreferencesSummary();
