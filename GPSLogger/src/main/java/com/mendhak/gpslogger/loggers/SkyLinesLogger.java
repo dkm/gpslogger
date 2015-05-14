@@ -144,8 +144,13 @@ public class SkyLinesLogger extends AbstractLiveLogger
             throws SocketException, UnknownHostException
     {
         super(intervals,minDistance);
+        Utilities.LogDebug("SkyLines constructor");
         this.minbufsize= AppSettings.getALMinBufSize();
-        Utilities.LogDebug("Skylines constructor");
+//      TODO: better handling of minbufsize and MAX_BUFSIZE is needed - take the both from settings, put some filters on settings
+        if(this.minbufsize > this.MAX_BUFSIZE/2) {
+            this.minbufsize = this.MAX_BUFSIZE / 2;
+            Utilities.LogDebug("minbufsize set too high, modified value is: " + this.minbufsize);
+        }
         this.key = key;
         this.intervalMS = intervals * 1000;
         this.serverport = port;

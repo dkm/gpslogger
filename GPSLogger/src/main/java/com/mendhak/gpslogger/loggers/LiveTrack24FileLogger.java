@@ -136,14 +136,20 @@ public class LiveTrack24FileLogger extends AbstractLiveLogger {
     private LiveTrack24FileLogger(String serverURL, String username,
                                   String password, int expectedInterval, int minDistance) throws MalformedURLException {
         super(expectedInterval,minDistance);
+        Utilities.LogDebug("livetrack24 constructor");
         this.ourVersion = AppSettings.getVersionName();
         this.vehicleName = AppSettings.getGliderName();
+
         this.minbufsize= AppSettings.getALMinBufSize();
+//      TODO: better handling of minbufsize and MAX_BUFSIZE is needed - take the both from settings, put some filters on settings
+        if(this.minbufsize > this.MAX_BUFSIZE/2) {
+            this.minbufsize = this.MAX_BUFSIZE / 2;
+            Utilities.LogDebug("minbufsize set too high, modified value is: " + this.minbufsize);
+        }
 
         if (this.vehicleName == null || this.vehicleName.trim().equals("")){
             this.vehicleName = "none";
         }
-        Utilities.LogDebug("livetrack24 constructor");
         URL url = new URL(serverURL + "/track.php");
         trackURL = url.toString();
         url = new URL(serverURL + "/client.php");
