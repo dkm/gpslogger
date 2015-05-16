@@ -262,6 +262,26 @@
   <string name="shortcut_start">Démarrer</string>
   <string name="shortcut_stop">Stop</string>
   <string name="shortcut_pickaction">Choisir une action</string>
+
+  <string name="log_skylines_title">Envoyer les données GPS au serveur SkyLines</string>
+  <string name="log_skylines_summary">Envoyer les données GPS au serveur SkyLines.</string>
+  <string name="skylines_enabled">Activer SkyLines</string>
+  <string name="skylines_enabled_summary">Activer ce serveur SkyLines.</string>
+  <string name="skylines_server_category">Paramètres de serveur SkyLines</string>
+  <string name="skylines_interval">Frequence de pointage, sec</string>
+  <string name="skylines_interval_summary">Frequence de recuperation de données GPS</string>
+
+  <string name="log_livetrack24_summary">Envoyer les données GPS au serveur de live tracking (leonardo, FFVL, ...).</string>
+  <string name="livetrack24_setup_summary">Envoyer les données GPS au serveur livetrack24</string>
+  <string name="livetrack24_enabled">Activer livetrack24</string>
+  <string name="livetrack24_enabled_summary">Activer ce serveur livetrack24.</string>
+  <string name="livetrack24_server_url">Serveur spécial</string>
+  <string name="livetrack24_server_url_summary">URL personalisé</string>
+  <string name="livetrack24_preset_custom">Parametres d\'autre serveur</string>
+
+  <string name="livetrack24_interval">Frequence de pointage, sec</string>
+  <string name="livetrack24_interval_summary">Frequence de recuperation de données GPS</string>
+
   <string name="log_opengts_title">Connexion au serveur OpenGTS</string>
   <string name="log_opengts_summary">Envoyer les données GPRMC sur un serveur en ligne OpenGTS.</string>
   <string name="opengts_setup_title">Réglages OpenGTS</string>
@@ -282,6 +302,8 @@
   <string name="autoopengts_server_path">Chemin d\'accès serveur</string>
   <string name="autoopengts_server_path_summary">Optionnel et uniquement pour les communications HTTP. Par exemple \"/gprmc/Data\"</string>
   <string name="autoopengts_device_id">ID du périphérique</string>
+  <string name="opengts_interval">Frequence de pointage, sec</string>
+  <string name="opengts_interval_summary">Frequence de recuperation de données GPS</string>
   <string name="autoftp_server">Serveur FTP</string>
   <string name="autoftp_server_summary">Adresse IP ou nom d\'hôte</string>
   <string name="autoftp_username">Login</string>
