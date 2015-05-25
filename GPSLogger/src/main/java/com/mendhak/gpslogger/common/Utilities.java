@@ -352,7 +352,7 @@ public class Utilities
             AppSettings.setALMinBufSize(Integer.parseInt(prefs.getString("abst_logger_minbufsize",
                     Integer.toString(al_minbufsize_default))));
         } catch (Exception e) {
-            AppSettings.setCritBattLevel(al_minbufsize_default);
+            AppSettings.setALMinBufSize(al_minbufsize_default);
         }
 
     }
