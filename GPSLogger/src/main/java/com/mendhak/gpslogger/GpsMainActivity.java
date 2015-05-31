@@ -75,6 +75,8 @@ public class GpsMainActivity extends SherlockFragmentActivity implements OnCheck
     private PrefsIO prefsio;
     private final int DIALOG_CHOOSE_FILE = 103;
 
+    public final static String CONF_DATA = "CONF_DATA_STRING";
+
     /**
      * Provides a connection to the GPS Logging Service
      */
@@ -120,15 +122,21 @@ public class GpsMainActivity extends SherlockFragmentActivity implements OnCheck
 
         setContentView(R.layout.main_fragment);
 
-        // Moved to onResume to update the list of loggers
-        //GetPreferences();
-//          Stays in onStart
-//        StartAndBindService();
+        Intent iin= getIntent();
+        Bundle ext = iin.getExtras();
+        String confImport = "";
+
+        if(ext!=null)
+        {
+            confImport = ext.getString(CONF_DATA);
+            Utilities.LogInfo("Got string to import configuration data");
+        }
 
         path = Environment.getExternalStorageDirectory() + File.separator + "GPSLogger";
         prefsio=new PrefsIO(this, PreferenceManager.getDefaultSharedPreferences(this), "gpslogger", path);
         this.registerReceiver(this.batteryInfoReceiver, new IntentFilter(Intent.ACTION_BATTERY_CHANGED));
         serviceIntent = new Intent(this, GpsLoggingService.class);
+        if(confImport.length() > 1) prefsio.ImportString(confImport);
     }
 
     @Override
@@ -136,8 +144,6 @@ public class GpsMainActivity extends SherlockFragmentActivity implements OnCheck
     {
         Utilities.LogDebug("GpsMainActivity.onStart");
         super.onStart();
-//          Stays in onResume
-//        StartAndBindService();
     }
 
     @Override

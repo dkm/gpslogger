@@ -12,6 +12,7 @@
     <uses-permission android:name="android.permission.USE_CREDENTIALS" />
     <uses-permission android:name="android.permission.WAKE_LOCK" />
 
+    <uses-permission android:name="com.android.email.permission.READ_ATTACHMENT" />
 
     <application
         android:allowBackup="true"
@@ -137,6 +138,146 @@
             <intent-filter>
                 <category android:name="android.intent.category.DEFAULT"/>
                 <action android:name="com.mendhak.gpslogger.LIVETRACK24_SETUP"/>
+            </intent-filter>
+        </activity>
+
+        <activity android:name="com.mendhak.gpslogger.ConfImportActivity"
+            android:label="@string/confimport_activity_title">
+            <intent-filter>
+                <category android:name="android.intent.category.DEFAULT"/>
+                <category android:name="android.intent.category.BROWSABLE" />
+                <action android:name="android.intent.action.VIEW" />
+                <data
+                    android:scheme="file"
+                    android:mimeType="*/*"
+                    android:host="*"
+                    android:pathPattern=".*\\.csv"
+                    />
+            </intent-filter>
+            <intent-filter>
+                <category android:name="android.intent.category.DEFAULT"/>
+                <category android:name="android.intent.category.BROWSABLE" />
+                <action android:name="android.intent.action.VIEW" />
+                <data
+                    android:scheme="content"
+                    android:mimeType="*/*"
+                    android:host="*"
+                    android:pathPattern=".*\\.csv"
+                    />
+            </intent-filter>
+            <intent-filter>
+                <category android:name="android.intent.category.DEFAULT"/>
+                <category android:name="android.intent.category.BROWSABLE" />
+                <action android:name="android.intent.action.VIEW" />
+                <data
+                    android:scheme="file"
+                    android:mimeType="text/plain"
+                    android:host="*"
+                    android:pathPattern=".*\\.csv"
+                    />
+            </intent-filter>
+            <intent-filter>
+                <category android:name="android.intent.category.DEFAULT"/>
+                <category android:name="android.intent.category.BROWSABLE" />
+                <action android:name="android.intent.action.VIEW" />
+                <data
+                    android:scheme="content"
+                    android:mimeType="text/plain"
+                    android:host="*"
+                    android:pathPattern=".*\\.csv"
+                    />
+            </intent-filter>
+            <intent-filter>
+                <category android:name="android.intent.category.DEFAULT"/>
+                <category android:name="android.intent.category.BROWSABLE" />
+                <action android:name="android.intent.action.VIEW" />
+                <data
+                    android:scheme="file"
+                    android:mimeType="application/octet-stream"
+                    android:host="*"
+                    android:pathPattern=".*\\.csv"
+                    />
+            </intent-filter>
+            <intent-filter>
+                <category android:name="android.intent.category.DEFAULT"/>
+                <category android:name="android.intent.category.BROWSABLE" />
+                <action android:name="android.intent.action.VIEW" />
+                <data
+                    android:scheme="content"
+                    android:mimeType="application/octet-stream"
+                    android:host="*"
+                    android:pathPattern=".*\\.csv"
+                    />
+            </intent-filter>
+            <intent-filter>
+                <category android:name="android.intent.category.DEFAULT"/>
+                <category android:name="android.intent.category.BROWSABLE" />
+                <action android:name="android.intent.action.VIEW" />
+                <data
+                    android:scheme="file"
+                    android:mimeType="application/csv"
+                    android:host="*"
+                    android:pathPattern=".*\\.csv"
+                    />
+            </intent-filter>
+            <intent-filter>
+                <category android:name="android.intent.category.DEFAULT"/>
+                <category android:name="android.intent.category.BROWSABLE" />
+                <action android:name="android.intent.action.VIEW" />
+                <data
+                    android:scheme="content"
+                    android:mimeType="application/csv"
+                    android:host="*"
+                    android:pathPattern=".*\\.csv"
+                    />
+            </intent-filter>
+            <intent-filter>
+                <category android:name="android.intent.category.DEFAULT"/>
+                <category android:name="android.intent.category.BROWSABLE" />
+                <action android:name="android.intent.action.VIEW" />
+                <data
+                    android:scheme="file"
+                    android:mimeType="text/comma-separated-values"
+                    android:host="*"
+                    android:pathPattern=".*"
+                    />
+            </intent-filter>
+            <intent-filter>
+                <category android:name="android.intent.category.DEFAULT"/>
+                <category android:name="android.intent.category.BROWSABLE" />
+                <action android:name="android.intent.action.VIEW" />
+                <data
+                    android:scheme="content"
+                    android:mimeType="text/comma-separated-values"
+                    android:host="*"
+                    android:pathPattern=".*"
+                    />
+            </intent-filter>
+            <intent-filter>
+                <category android:name="android.intent.category.DEFAULT"/>
+                <category android:name="android.intent.category.BROWSABLE" />
+                <action android:name="android.intent.action.VIEW" />
+                <data
+                    android:scheme="file"
+                    android:mimeType="text/csv"
+                    android:host="*"
+                    android:pathPattern=".*"
+                    />
+            </intent-filter>
+            <intent-filter>
+                <category android:name="android.intent.category.DEFAULT"/>
+                <category android:name="android.intent.category.BROWSABLE" />
+                <action android:name="android.intent.action.VIEW" />
+                <data
+                    android:scheme="content"
+                    android:mimeType="text/csv"
+                    android:host="*"
+                    android:pathPattern=".*"
+                    />
+            </intent-filter>
+            <intent-filter>
+                <category android:name="android.intent.category.DEFAULT"/>
+                <action android:name="com.mendhak.gpslogger.ConfImport"/>
             </intent-filter>
         </activity>
 

@@ -54,6 +54,11 @@ public class PrefsIO {
     private final String version = "v1.1";
 
     public final int ACTIVITY_CHOOSE_FILE = 2;
+    public final int MAXLINES = 256;
+    private final String strBoolean="Boolean";
+    private final String strString="String";
+
+
 
     private String filter="[^a-zA-Z0-9]";
 
@@ -83,6 +88,10 @@ public class PrefsIO {
 
     public void SetCurFileName(String filename) {
         curFileName=filename;
+    }
+
+    public void SetSharedPrefs(SharedPreferences Prefs) {
+        this.sharedPrefs = Prefs;
     }
 
     public void ExportFile() {
@@ -132,13 +141,37 @@ public class PrefsIO {
         }
     }
 
+    public void ImportString(String strConfig) {
+        SharedPreferences.Editor editor = sharedPrefs.edit();
+        String[] lines;
+        String[] params;
+        String regexp="["+separator+"]";
+        String linesep="[\n]";
+        int i=0;
+        int imported=0;
+        Utilities.LogDebug("Trying to import settings from string");
+        lines=strConfig.split(linesep,MAXLINES);
+        for(i=0; i<lines.length;i++) {
+            if(lines[i].startsWith(commentPrefix)) continue;
+            params=lines[i].split(regexp);
+            if(params.length<3) continue;
+            if(params[2].endsWith(strBoolean)) editor.putBoolean(params[0], Boolean.parseBoolean(params[1]) );
+            else if(params[2].endsWith(strString)) editor.putString(params[0], DecodeValue(params[1]) );
+            editor.commit();
+            imported++;
+        }
+        Utilities.LogDebug("Finished import: "+imported+" lines");
+        Toast.makeText(context, R.string.ImportSuccess, Toast.LENGTH_LONG).show();
+        Intent settingsActivity = new Intent(context, GpsSettingsActivity.class);
+        context.startActivity(settingsActivity);
+    }
+
     public void ImportFile() {
         SharedPreferences.Editor editor = sharedPrefs.edit();
         String str="";
-        String strBoolean="Boolean";
-        String strString="String";
         String[] params;
         String regexp="["+separator+"]";
+        int imported=0;
 
         Utilities.LogDebug("Trying to import settings from file: "+curFileName);
 
@@ -151,11 +184,14 @@ public class PrefsIO {
                     while( (str=br.readLine()) != null ) {
                         if(str.startsWith(commentPrefix)) continue;
                         params=str.split(regexp);
+                        if(params.length<3) continue;
                         if(params[2].endsWith(strBoolean)) editor.putBoolean(params[0], Boolean.parseBoolean(params[1]) );
                         else if(params[2].endsWith(strString)) editor.putString(params[0], DecodeValue(params[1]) );
                         editor.commit();
+                        imported++;
                     }
                     br.close();
+                    Utilities.LogDebug("Finished import: "+imported+" lines");
                     Toast.makeText(context, R.string.ImportSuccess, Toast.LENGTH_LONG).show();
                     Intent settingsActivity = new Intent(context, GpsSettingsActivity.class);
                     context.startActivity(settingsActivity);
@@ -168,6 +204,35 @@ public class PrefsIO {
             }
         }
         else Toast.makeText(context, R.string.ImportFailed, Toast.LENGTH_LONG).show();
+    }
+
+    public void ViewFile() {
+
+        String str="";
+        String wholeFile="";
+        Utilities.LogDebug("Trying to show settings from file: "+curFileName);
+
+        if(curFileName.length()>0) {
+            File mySetFile=new File(curFileName);
+            try {
+                if(mySetFile.exists()) {
+                    FileReader fr = new FileReader(mySetFile);
+                    BufferedReader br = new BufferedReader(fr);
+                    while( (str=br.readLine()) != null ) {
+                        wholeFile += (str + "\n");
+                    }
+                    br.close();
+//                    Intent settingsActivity = new Intent(context, GpsSettingsActivity.class);
+//                    context.startActivity(settingsActivity);
+                }
+                else Toast.makeText(context, R.string.confimport_show_failed, Toast.LENGTH_LONG).show();
+            }
+            catch(Throwable t) {
+                Toast.makeText(context, "Exception: "+t.toString(), Toast.LENGTH_LONG).show();
+                Toast.makeText(context, R.string.confimport_show_failed, Toast.LENGTH_LONG).show();
+            }
+        }
+        else Toast.makeText(context, R.string.confimport_show_failed, Toast.LENGTH_LONG).show();
     }
 
     private void BrowseFile() {

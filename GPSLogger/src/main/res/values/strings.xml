@@ -548,4 +548,8 @@
     <string name="faq_screen_title">Frequently asked questions</string>
     <string name="menu_faq">Help and FAQ</string>
 
+    <string name="confimport_button">Import</string>
+    <string name="confimport_activity_title">Import Config File</string>
+    <string name="confimport_show_failed">Failed to show configuration file content.</string>
+
 </resources>
