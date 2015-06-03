@@ -35,6 +35,8 @@ import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.widget.TextView;
 import android.widget.Toast;
+//import com.android.email.Email;
+//import com.android.email.provider.AttachmentProvider;
 
 import com.actionbarsherlock.app.SherlockActivity;
 import com.actionbarsherlock.view.MenuItem;
@@ -79,6 +81,7 @@ public class ConfImportActivity extends SherlockActivity
         String str = "";
 //        String typemime = "";
         String scheme = "";
+        File mySetFile = null;
 
         wholeFile = "";
 
@@ -93,7 +96,14 @@ public class ConfImportActivity extends SherlockActivity
                     Cursor c = cr.query(uri, new String[] { Columns.DATA }, null, null, null);
                     if (c != null) {
                         try {
-                            if (c.moveToFirst()) attachmentUri = Uri.parse(c.getString(0));
+                            if (c.moveToFirst()) {
+                                attachmentUri = Uri.parse(c.getString(0));
+                                int imax=c.getCount();
+                                int jmax=c.getColumnCount();
+                                for(int i=0; i<imax; i++) {
+                                    if(c.moveToNext()) str=c.getString(0);
+                                }
+                            }
                              else attachmentUri = null;
 
                         } finally {
@@ -102,33 +112,78 @@ public class ConfImportActivity extends SherlockActivity
                     }
                     if(attachmentUri != null) {
                         uri=attachmentUri;
-//                        scheme = uri.getScheme();
+                        scheme = uri.getScheme();
                     }
             }
-            path=uri.getPath();
+            if(scheme==null) {
+                path = uri.getPath();
 //                fileName = uri.getLastPathSegment();
-            if(path!=null) {
-                if (path.length() > 0) {
-                    File mySetFile = new File(path);
-                    try {
-                        if (mySetFile.exists()) {
-                            FileReader fr = new FileReader(mySetFile);
-                            BufferedReader br = new BufferedReader(fr);
-                            while ((str = br.readLine()) != null) {
-                                wholeFile += (str + "\n");
-                            }
-                            br.close();
+                if (path != null) {
+                    if (path.length() > 0) {
+                        mySetFile = new File(path);
+                        try {
+                            if (mySetFile.exists()) {
+                                FileReader fr = new FileReader(mySetFile);
+                                BufferedReader br = new BufferedReader(fr);
+                                while ((str = br.readLine()) != null) {
+                                    wholeFile += (str + "\n");
+                                }
+                                br.close();
 //                    Intent settingsActivity = new Intent(context, GpsSettingsActivity.class);
 //                    context.startActivity(settingsActivity);
-                        } else
+                            } else
+                                Toast.makeText(this, R.string.confimport_show_failed, Toast.LENGTH_LONG).show();
+                        } catch (Throwable t) {
+                            Toast.makeText(this, "Exception: " + t.toString(), Toast.LENGTH_LONG).show();
                             Toast.makeText(this, R.string.confimport_show_failed, Toast.LENGTH_LONG).show();
-                    } catch (Throwable t) {
-                        Toast.makeText(this, "Exception: " + t.toString(), Toast.LENGTH_LONG).show();
-                        Toast.makeText(this, R.string.confimport_show_failed, Toast.LENGTH_LONG).show();
+                        }
                     }
                 }
             }
-        }
+            else if (scheme.equals(ContentResolver.SCHEME_CONTENT)) {
+                ContentResolver cr = getContentResolver();
+                try {
+                    AssetFileDescriptor afd = cr.openAssetFileDescriptor(uri, "r");
+                    long length = afd.getLength();
+                    byte[] filedata = new byte[(int) length];
+                    InputStream is = cr.openInputStream(uri);
+                    if(is != null)
+                    try {
+                        is.read(filedata, 0, (int) length);
+                        wholeFile += new String(filedata,"UTF8");
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                } catch (FileNotFoundException e) {
+                    e.printStackTrace();
+                }
+            }
+            else if (scheme.equals(ContentResolver.SCHEME_FILE)) {
+                path = uri.getPath();
+//                fileName = uri.getLastPathSegment();
+                if (path != null) {
+                    if (path.length() > 0) {
+                        mySetFile = new File(path);
+                        try {
+                            if (mySetFile.exists()) {
+                                FileReader fr = new FileReader(mySetFile);
+                                BufferedReader br = new BufferedReader(fr);
+                                while ((str = br.readLine()) != null) {
+                                    wholeFile += (str + "\n");
+                                }
+                                br.close();
+//                    Intent settingsActivity = new Intent(context, GpsSettingsActivity.class);
+//                    context.startActivity(settingsActivity);
+                            } else
+                                Toast.makeText(this, R.string.confimport_show_failed, Toast.LENGTH_LONG).show();
+                        } catch (Throwable t) {
+                            Toast.makeText(this, "Exception: " + t.toString(), Toast.LENGTH_LONG).show();
+                            Toast.makeText(this, R.string.confimport_show_failed, Toast.LENGTH_LONG).show();
+                        }
+                    }
+                }
+            }
+            }
         else {
             Toast.makeText(this, R.string.confimport_show_failed, Toast.LENGTH_LONG).show();
         }
