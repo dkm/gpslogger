@@ -129,7 +129,8 @@ public class GpsMainActivity extends SherlockFragmentActivity implements OnCheck
         if(ext!=null)
         {
             confImport = ext.getString(CONF_DATA);
-            Utilities.LogInfo("Got string to import configuration data");
+            if(confImport!=null) Utilities.LogInfo("Got string to import configuration data");
+                else confImport="";
         }
 
         path = Environment.getExternalStorageDirectory() + File.separator + "GPSLogger";

@@ -97,14 +97,18 @@ public class ConfImportActivity extends SherlockActivity
                     if (c != null) {
                         try {
                             if (c.moveToFirst()) {
-                                attachmentUri = Uri.parse(c.getString(0));
-                                int imax=c.getCount();
-                                int jmax=c.getColumnCount();
-                                for(int i=0; i<imax; i++) {
-                                    if(c.moveToNext()) str=c.getString(0);
+                                String struri=c.getString(0);
+                                if(struri!=null) {
+                                    attachmentUri = Uri.parse(struri);
+                                    int imax = c.getCount();
+                                    int jmax = c.getColumnCount();
+                                    for (int i = 0; i < imax; i++) {
+                                        if (c.moveToNext()) str = c.getString(0);
+                                    }
                                 }
+                                else attachmentUri = null;
                             }
-                             else attachmentUri = null;
+                            else attachmentUri = null;
 
                         } finally {
                             c.close();
