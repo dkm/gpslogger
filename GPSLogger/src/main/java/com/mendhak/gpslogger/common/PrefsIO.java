@@ -206,35 +206,6 @@ public class PrefsIO {
         else Toast.makeText(context, R.string.ImportFailed, Toast.LENGTH_LONG).show();
     }
 
-    public void ViewFile() {
-
-        String str="";
-        String wholeFile="";
-        Utilities.LogDebug("Trying to show settings from file: "+curFileName);
-
-        if(curFileName.length()>0) {
-            File mySetFile=new File(curFileName);
-            try {
-                if(mySetFile.exists()) {
-                    FileReader fr = new FileReader(mySetFile);
-                    BufferedReader br = new BufferedReader(fr);
-                    while( (str=br.readLine()) != null ) {
-                        wholeFile += (str + "\n");
-                    }
-                    br.close();
-//                    Intent settingsActivity = new Intent(context, GpsSettingsActivity.class);
-//                    context.startActivity(settingsActivity);
-                }
-                else Toast.makeText(context, R.string.confimport_show_failed, Toast.LENGTH_LONG).show();
-            }
-            catch(Throwable t) {
-                Toast.makeText(context, "Exception: "+t.toString(), Toast.LENGTH_LONG).show();
-                Toast.makeText(context, R.string.confimport_show_failed, Toast.LENGTH_LONG).show();
-            }
-        }
-        else Toast.makeText(context, R.string.confimport_show_failed, Toast.LENGTH_LONG).show();
-    }
-
     private void BrowseFile() {
         Intent chooseFile;
         Intent intent;

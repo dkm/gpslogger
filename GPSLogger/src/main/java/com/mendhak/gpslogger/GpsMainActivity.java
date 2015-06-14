@@ -141,6 +141,22 @@ public class GpsMainActivity extends SherlockFragmentActivity implements OnCheck
     }
 
     @Override
+    protected void onNewIntent(Intent iin)
+    {
+        Bundle ext = iin.getExtras();
+        String confImport = "";
+
+        if(ext!=null)
+        {
+            confImport = ext.getString(CONF_DATA);
+            if(confImport!=null) {
+                Utilities.LogInfo("Got string to import configuration data");
+                prefsio.ImportString(confImport);
+            }
+        }
+    }
+
+    @Override
     protected void onStart()
     {
         Utilities.LogDebug("GpsMainActivity.onStart");
@@ -303,9 +319,14 @@ public class GpsMainActivity extends SherlockFragmentActivity implements OnCheck
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         if( (requestCode==prefsio.ACTIVITY_CHOOSE_FILE) && (resultCode == RESULT_OK) ) {
             Uri uri = data.getData();
-            String str=uri.getPath();
-            prefsio.SetCurFileName(str);
-            prefsio.ImportFile();
+
+            Intent intent = new Intent(this, ConfImportActivity.class);
+            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+            intent.setData(uri);
+            startActivity(intent);
+//            String str=uri.getPath();
+//            prefsio.SetCurFileName(str);
+//            prefsio.ImportFile();
         }
     }
 
