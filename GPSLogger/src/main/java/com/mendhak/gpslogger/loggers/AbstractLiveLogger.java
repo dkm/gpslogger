@@ -19,6 +19,7 @@ public abstract class AbstractLiveLogger extends AbstractLogger {
     protected final static int sleepTimeUpload = 100;  // Time to sleep for upload thread waiting for upload (one cycle)
     protected int minbufsize=0; // Should be set by child class if needed
     protected int MAX_TRY=3;
+    protected int MAX_SEND_FAILED=5;
     protected int MAX_BUFSIZE=32;
 
     private Runnable flusher;
@@ -60,7 +61,7 @@ public abstract class AbstractLiveLogger extends AbstractLogger {
                 int bufsize=buf.size();
                 Utilities.LogDebug(name + " flushing buffer (" + bufsize + ")");
                 int i=0;
-                int sent=0;
+                int sent=0, failed=0;
                 int maxtry=MAX_TRY;
                 // TODO: ignore skipping by minbufsize using timeout (got from user settings)
                 if ( (bufsize < minbufsize) && (!loggerIsClosing) ) {
@@ -69,22 +70,26 @@ public abstract class AbstractLiveLogger extends AbstractLogger {
                 }
                 do {
                     sent=0;
+                    failed=0;
                     for (i = 0; i < bufsize; i++) {
                         try {
                             b = buf.peek();
                             if (b == null) break;
                             Utilities.LogDebug(name + " flushing elt " + i);
-                            Utilities.LogDebug("location time: " + b.timems);
+                            Utilities.LogDebug("flushing location time: " + b.timems);
 
                             if (liveUpload(b)) {
                                 buf.pop();
                                 sent++;
                             } else {
                                 Utilities.LogDebug(name + " failed flush elt " + i);
+                                failed++;
                             }
                         } catch (IOException ex) {
                             Utilities.LogDebug(name + ": sending fix", ex);
+                            failed++;
                         }
+                        if(failed>MAX_SEND_FAILED) break;
                     }
                     Utilities.LogDebug(name + ": finished flushing " + i + " locations");
                     maxtry--;

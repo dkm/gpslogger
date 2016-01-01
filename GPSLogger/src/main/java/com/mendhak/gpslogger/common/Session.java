@@ -49,8 +49,14 @@ public class Session extends Application
     private static boolean isBound;
     private static boolean readyToBeAutoSent = false;
     private static boolean allowDescription = true;
+    private static boolean waitingForAlarm = false;
 //    private static boolean isSinglePointMode = false;
     private static int retryTimeout=0;
+
+    public static int retryStartService=0;
+    public static long lastPanicRestartService=0L;
+//    public static boolean isServiceStarting=false;
+
     private static final List<IFileLogger> loggers = new ArrayList<IFileLogger>();
 //
 //    public static boolean isSinglePointMode()
@@ -64,6 +70,15 @@ public class Session extends Application
 //    }
 
     // ---------------------------------------------------
+    /**
+     * @return whether we are waiting for next alarm time and so we should ignore location updates
+     */
+    public static boolean isWaitingForAlarm()
+    {
+        return waitingForAlarm;
+    }
+
+    public static void setWaitingForAlarm(boolean status) { waitingForAlarm = status; }
 
     /**
      * @return whether GPS (tower) is enabled

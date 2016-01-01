@@ -80,6 +80,7 @@ public class OpenGTSLogger extends AbstractLiveLogger
         OpenGTSClient openGTSClient = new OpenGTSClient(server, port, path, al, null);
         uploadFinished=false;
         uploadOK=false;
+        Utilities.LogDebug("OpenGTS liveUpload is trying to send location");
         startUploadTimer();
         openGTSClient.sendHTTP(deviceId, bloc.toLocation() );
         while ( (!uploadFinished) && (!isTimedOutUpload()) ) {
@@ -89,6 +90,11 @@ public class OpenGTSLogger extends AbstractLiveLogger
                 e.printStackTrace();
             }
         }
+        if(!uploadFinished) {   // Timed out
+            Utilities.LogDebug("Cancelling OpenGTS liveUpload by timeout");
+            openGTSClient.OnFailure();
+        }
+        Utilities.LogDebug("OpenGTS liveUpload finished sending location");
         return uploadOK;
     }
 

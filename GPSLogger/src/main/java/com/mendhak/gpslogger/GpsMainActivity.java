@@ -85,6 +85,7 @@ public class GpsMainActivity extends SherlockFragmentActivity implements OnCheck
         @Override
         public void onServiceDisconnected(ComponentName name)
         {
+            Utilities.LogDebug("Service disconnected");
             loggingService = null;
         }
 
@@ -93,7 +94,7 @@ public class GpsMainActivity extends SherlockFragmentActivity implements OnCheck
         {
             loggingService = ((GpsLoggingService.GpsLoggingBinder) service).getService();
             GpsLoggingService.SetServiceClient(GpsMainActivity.this);
-
+            Utilities.LogDebug("Service successfully connected");
             if (Session.isStarted())
             {
                 SetMainButtonChecked(true);
@@ -136,7 +137,7 @@ public class GpsMainActivity extends SherlockFragmentActivity implements OnCheck
         path = Environment.getExternalStorageDirectory() + File.separator + "GPSLogger";
         prefsio=new PrefsIO(this, PreferenceManager.getDefaultSharedPreferences(this), "gpslogger", path);
         this.registerReceiver(this.batteryInfoReceiver, new IntentFilter(Intent.ACTION_BATTERY_CHANGED));
-        serviceIntent = new Intent(this, GpsLoggingService.class);
+//        serviceIntent = new Intent(this, GpsLoggingService.class);
         if(confImport.length() > 1) prefsio.ImportString(confImport);
     }
 
@@ -358,23 +359,28 @@ public class GpsMainActivity extends SherlockFragmentActivity implements OnCheck
     private void StartAndBindService()
     {
         Utilities.LogDebug("StartAndBindService - binding now");
-        if(isServiceRunning(GpsLoggingService.class))
+        serviceIntent = new Intent(this, GpsLoggingService.class);
+        if(!isServiceRunning(GpsLoggingService.class))
         {
-            Utilities.LogDebug("Seems that the service is already running");
-            if(Session.isBoundToService()) return;
-                else
-                {
-                    Utilities.LogDebug("Seems that the service is running but not binded - stopping the service");
-                    StopAndUnbindServiceIfRequired();
-                }
+            // Start the service in case it isn't already running
+            Utilities.LogDebug("Trying to start service");
+            startService(serviceIntent);
+            Session.setBoundToService(false);
         }
-//        Goes to onCreate
-//        serviceIntent = new Intent(this, GpsLoggingService.class);
-        // Start the service in case it isn't already running
-        startService(serviceIntent);
+        else {
+            Utilities.LogDebug("Seems that the service is already running");
+            if (Session.isBoundToService() && (loggingService != null)) return;
+            else {
+                Utilities.LogDebug("Seems that the service is running but not bound");
+//                    StopAndUnbindServiceIfRequired();
+            }
+        }
         // Now bind to service
-        bindService(serviceIntent, gpsServiceConnection, Context.BIND_AUTO_CREATE);
-        Session.setBoundToService(true);
+        Utilities.LogDebug("Trying to bind to service");
+        if(bindService(serviceIntent, gpsServiceConnection, Context.BIND_AUTO_CREATE)) {
+            Utilities.LogDebug("Successfully bound to service");
+            Session.setBoundToService(true);
+        }
     }
 
     /**

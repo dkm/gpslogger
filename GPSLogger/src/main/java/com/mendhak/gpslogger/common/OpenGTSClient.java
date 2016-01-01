@@ -48,6 +48,11 @@ public class OpenGTSClient
     private int locationsCount = 0;
     private int sentLocationsCount = 0;
 
+    private final static int MAX_RETRIES = 1;
+    private final static int RETRIES_TIMEOUT = 200; // ms
+    private final static int TIMEOUT = 3000;    // ms
+//    private final static int RESP_TIMEOUT = 2000;    // ms
+
 
     public OpenGTSClient(String server, Integer port, String path, IActionListener callback, Context applicationContext)
     {
@@ -83,6 +88,8 @@ public class OpenGTSClient
             url.append(getURL());
 
             httpClient = new AsyncHttpClient();
+            httpClient.setTimeout(TIMEOUT);
+            httpClient.setMaxRetriesAndTimeout(MAX_RETRIES, RETRIES_TIMEOUT);
 
             for (Location loc : locations)
             {
@@ -93,7 +100,7 @@ public class OpenGTSClient
                 params.put("alt", String.valueOf(loc.getAltitude()));
 
 
-                Utilities.LogDebug("Sending URL " + url + " with params " + params.toString());
+                Utilities.LogDebug("OpenGTS client is sending URL " + url + " with params " + params.toString());
                 httpClient.get(applicationContext, url.toString(), params, new MyAsyncHttpResponseHandler(this));
             }
         }
@@ -173,7 +180,7 @@ public class OpenGTSClient
 
     public void OnFailure()
     {
-        httpClient.cancelRequests(applicationContext, true);
+        if(httpClient != null) httpClient.cancelRequests(applicationContext, true); // Can be null if call from outside before init or after free
         callback.OnFailure();
     }
 
