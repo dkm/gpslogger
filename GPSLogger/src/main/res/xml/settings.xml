@@ -92,6 +92,16 @@
                 android:hint="@string/abst_logger_minbufsize_hint"
                 android:defaultValue="1" />
 
+            <EditTextPreference
+                android:key="abst_logger_maxbufsize"
+                android:title="@string/abst_logger_maxbufsize_title"
+                android:summary="@string/abst_logger_maxbufsize_summary"
+                android:dialogTitle="@string/abst_logger_maxbufsize_dialog_title"
+                android:numeric="integer"
+                android:maxLength="3"
+                android:hint="@string/abst_logger_maxbufsize_hint"
+                android:defaultValue="32" />
+
         </PreferenceScreen>
 
         <PreferenceScreen

@@ -233,7 +233,12 @@
   <string name="abst_logger_minbufsize_dialog_title">Количество точек в буфере</string>
   <string name="abst_logger_minbufsize_hint">Количество точек</string>
 
-  <string name="osm_setup_title">OpenStreetMap</string>
+  <string name="abst_logger_maxbufsize_title">Размер буфера</string>
+  <string name="abst_logger_maxbufsize_summary">Максимальное количество точек в буфере во время отсутствия подключения</string>
+  <string name="abst_logger_maxbufsize_dialog_title">Количество точек в буфере</string>
+  <string name="abst_logger_maxbufsize_hint">Количество точек</string>
+
+    <string name="osm_setup_title">OpenStreetMap</string>
   <string name="osm_setup_summary">Добавляйте теги, описания GPS трекам</string>
   <string name="osm_preferences_title">Настройки OpenStreetMap</string>
   <string name="osm_lbl_authorize">Авторизовать приложение</string>

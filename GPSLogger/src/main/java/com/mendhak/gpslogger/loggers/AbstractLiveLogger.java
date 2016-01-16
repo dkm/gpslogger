@@ -6,6 +6,7 @@ import android.os.AsyncTask;
 import android.os.Handler;
 
 // import com.mendhak.gpslogger.common.AppSettings;
+import com.mendhak.gpslogger.common.AppSettings;
 import com.mendhak.gpslogger.common.IActionListener;
 import com.mendhak.gpslogger.common.Utilities;
 import com.mendhak.gpslogger.loggers.utils.LocationBuffer;
@@ -18,9 +19,9 @@ public abstract class AbstractLiveLogger extends AbstractLogger {
     protected long timeStartUpload;
     protected final static int sleepTimeUpload = 100;  // Time to sleep for upload thread waiting for upload (one cycle)
     protected int minbufsize=0; // Should be set by child class if needed
+    protected int maxbufsize=32;
     protected int MAX_TRY=3;
     protected int MAX_SEND_FAILED=5;
-    protected int MAX_BUFSIZE=32;
 
     private Runnable flusher;
 // **** Handler removed by Peter 01/11/2014 - replaced by execAsyncFlush() call in Write method
@@ -40,6 +41,7 @@ public abstract class AbstractLiveLogger extends AbstractLogger {
 
     public AbstractLiveLogger(final int minsec, final int mindist){
         super(minsec, mindist);
+        maxbufsize= AppSettings.getALMaxBufSize();
 
 //        this.handler = new Handler();
 
@@ -140,8 +142,8 @@ public abstract class AbstractLiveLogger extends AbstractLogger {
 //        final long now = SystemClock.elapsedRealtime();
 //        calendar.setTimeInMillis(loc.getTime());
         int bufsize=loc_buffer.size();
-        if (bufsize > MAX_BUFSIZE) {
-            Utilities.LogDebug(name  + " cannot push: bufsize= " + bufsize + " > "+MAX_BUFSIZE);
+        if (bufsize > maxbufsize) {
+            Utilities.LogDebug(name  + " cannot push: bufsize= " + bufsize + " > "+maxbufsize);
             Utilities.LogDebug(name  + " deleting the oldest point");
             loc_buffer.pop();
         }

@@ -355,6 +355,15 @@ public class Utilities
             AppSettings.setALMinBufSize(al_minbufsize_default);
         }
 
+        final int al_maxbufsize_default = 32;
+
+        try {
+            AppSettings.setALMaxBufSize(Integer.parseInt(prefs.getString("abst_logger_maxbufsize",
+                    Integer.toString(al_maxbufsize_default))));
+        } catch (Exception e) {
+            AppSettings.setALMaxBufSize(al_maxbufsize_default);
+        }
+
     }
 
     public static void ShowProgress(Context ctx, String title, String message)
