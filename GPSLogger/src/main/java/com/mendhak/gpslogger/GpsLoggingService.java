@@ -116,6 +116,8 @@ public class GpsLoggingService extends Service implements IActionListener
         final Handler handler = new Handler();
         final Intent intt = intent;
 
+        Session.setWaitingForAlarm(false);
+
         if( ( (flags==START_FLAG_REDELIVERY) || (flags==START_FLAG_RETRY) ) && !Session.isStarted() ) {
 /*
             Normally should not happen but sometimes Session object values are lost on restart :(
@@ -124,7 +126,7 @@ public class GpsLoggingService extends Service implements IActionListener
             isRestarting=true;
         }
 
-        if( ( (flags==START_FLAG_REDELIVERY) || (flags==START_FLAG_RETRY) ) && (startId>(Session.retryStartService+MAX_RETRY_START)) && (systime>(Session.lastPanicRestartService+2*NEXT_ALARM_PANIC)) ) {
+        if( ( flags==START_FLAG_REDELIVERY ) && (startId>(Session.retryStartService+MAX_RETRY_START)) && (systime>(Session.lastPanicRestartService+2*NEXT_ALARM_PANIC)) ) {
 /*
             Panic, the system kills our service immediately after starting, then retries to start it
             Normally it should not happen anymore with START_STICKY flag used, but in some race conditions we can suppose such situation
@@ -235,7 +237,6 @@ public class GpsLoggingService extends Service implements IActionListener
                 {
                     Utilities.LogDebug("GpsLoggingService.HandleIntent - getNextPoint session started");
                     StartGpsManager();
-                    Session.setWaitingForAlarm(false);
                 }
                 else if (getNextPoint && isRestarting)
                 {
