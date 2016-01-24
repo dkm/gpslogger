@@ -184,6 +184,7 @@
   <string name="started_waiting">GPS a démarré, en attente de la position</string>
   <string name="gps_stopped">GPS arrêté</string>
   <string name="stopped">Arrêté</string>
+  <string name="stopped_low_batt">Arrêté batterie faible</string>
 
   <string name="abst_logger_minbufsize_title">Envoi de point groupé</string>
   <string name="abst_logger_minbufsize_summary">Nombre de points minimal dans le tampon de memoire pour commencer envoi</string>

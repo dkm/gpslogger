@@ -227,6 +227,7 @@
   <string name="started_waiting">GPS запущен, ожидаем координаты</string>
   <string name="gps_stopped">GPS приостановлен</string>
   <string name="stopped">Остановлено</string>
+  <string name="stopped_low_batt">Остановлено разряжена батарея</string>
 
   <string name="abst_logger_minbufsize_title">Групповая отправка точек</string>
   <string name="abst_logger_minbufsize_summary">Минимальное количество точек в буфере для начала отправки</string>

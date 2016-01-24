@@ -293,6 +293,7 @@
     <string name="started_waiting">GPS started, waiting for fix</string>
     <string name="gps_stopped">GPS paused</string>
     <string name="stopped">Stopped</string>
+    <string name="stopped_low_batt">Stopped low battery</string>
 
     <string name="abst_logger_minbufsize_title">Send points by group</string>
     <string name="abst_logger_minbufsize_summary">Minimum number of points in buffer to start sending</string>

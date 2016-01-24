@@ -65,21 +65,21 @@
                 android:title="@string/opengts_setup_title"
                 android:summary="@string/opengts_setup_summary"
                 android:key="opengts_setup">
-                <intent android:action="com.mendhak.gpslogger.OPENGTS_SETUP" />
+                <intent android:action="net.kataplop.gpslogger.OPENGTS_SETUP" />
             </Preference>
 
             <Preference
                 android:title="@string/skylines_setup_title"
                 android:summary="@string/skylines_setup_summary"
                 android:key="skylines_setup">
-                <intent android:action="com.mendhak.gpslogger.SKYLINES_SETUP" />
+                <intent android:action="net.kataplop.gpslogger.SKYLINES_SETUP" />
             </Preference>
 
             <Preference
                 android:title="@string/livetrack24_setup_title"
                 android:summary="@string/livetrack24_setup_summary"
                 android:key="livetrack24_setup">
-                <intent android:action="com.mendhak.gpslogger.LIVETRACK24_SETUP" />
+                <intent android:action="net.kataplop.gpslogger.LIVETRACK24_SETUP" />
             </Preference>
 
             <EditTextPreference
@@ -301,35 +301,35 @@
                     android:title="@string/autoemail_title"
                     android:summary="@string/autoemail_summary"
                     android:key="autoemail_setup">
-                    <intent android:action="com.mendhak.gpslogger.AUTOEMAIL_SETUP" />
+                    <intent android:action="net.kataplop.gpslogger.AUTOEMAIL_SETUP" />
                 </Preference>
 
                 <Preference
                     android:title="@string/osm_setup_title"
                     android:summary="@string/osm_setup_summary"
                     android:key="osm_setup">
-                    <intent android:action="com.mendhak.gpslogger.OSM_AUTHORIZE" />
+                    <intent android:action="net.kataplop.gpslogger.OSM_AUTHORIZE" />
                 </Preference>
 
                 <Preference
                     android:title="@string/dropbox_setup_title"
                     android:summary="@string/dropbox_setup_summary"
                     android:key="dropbox_setup">
-                    <intent android:action="com.mendhak.gpslogger.DROPBOX_SETUP" />
+                    <intent android:action="net.kataplop.gpslogger.DROPBOX_SETUP" />
                 </Preference>
 
                 <Preference
                     android:title="@string/gdocs_setup_title"
                     android:summary="@string/gdocs_setup_summary"
                     android:key="gdocs_setup">
-                    <intent android:action="com.mendhak.gpslogger.GDOCS_SETUP" />
+                    <intent android:action="net.kataplop.gpslogger.GDOCS_SETUP" />
                 </Preference>
 
                 <Preference
                     android:title="@string/autoftp_setup_title"
                     android:summary="@string/autoftp_setup_summary"
                     android:key="autoftp_setup">
-                    <intent android:action="com.mendhak.gpslogger.AUTOFTP_SETUP" />
+                    <intent android:action="net.kataplop.gpslogger.AUTOFTP_SETUP" />
                 </Preference>
 
             </PreferenceCategory>

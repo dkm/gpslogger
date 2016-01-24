@@ -30,6 +30,8 @@ import java.util.Date;
 import java.util.Locale;
 import java.util.TimeZone;
 
+import static java.lang.String.format;
+
 
 /**
  * OpenGTS Client
@@ -198,7 +200,7 @@ public class OpenGTSClient
         DecimalFormatSymbols dfs = new DecimalFormatSymbols(Locale.US);
         DecimalFormat f = new DecimalFormat("0.000000", dfs);
 
-        String gprmc = String.format("%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,,",
+        String gprmc = format("%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,,",
                 "$GPRMC",
                 NMEAGPRMCTime(new Date(loc.getTime())),
                 "A",

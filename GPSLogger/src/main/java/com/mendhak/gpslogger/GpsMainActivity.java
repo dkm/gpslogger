@@ -331,6 +331,20 @@ public class GpsMainActivity extends SherlockFragmentActivity implements OnCheck
         }
     }
 
+    private boolean isBatteryLow() {
+        Intent intent  = this.registerReceiver(null, new IntentFilter(Intent.ACTION_BATTERY_CHANGED));
+        int plugged= intent.getIntExtra(BatteryManager.EXTRA_PLUGGED, 0);
+        if(plugged!=0) return false;
+        int level   = intent.getIntExtra(BatteryManager.EXTRA_LEVEL, 0);
+        int scale   = intent.getIntExtra(BatteryManager.EXTRA_SCALE, 100);
+        int percent = (level*100)/scale;
+        if(percent<=AppSettings.getCritBattLevel()) {
+            Utilities.LogDebug("Cannot start logging - battery level equal or below critical");
+            return true;
+        }
+        return false;
+    }
+
     private BroadcastReceiver batteryInfoReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
@@ -348,7 +362,7 @@ public class GpsMainActivity extends SherlockFragmentActivity implements OnCheck
                     SetMainButtonChecked(false);
 //                    ShowPreferencesSummary();
                     loggingService.stopSelf();
-                    loggingService.SetStatus(getString(R.string.stopped));
+                    loggingService.SetStatus(getString(R.string.stopped_low_batt));
                 }
             }
         }
@@ -445,8 +459,15 @@ public class GpsMainActivity extends SherlockFragmentActivity implements OnCheck
         if (isChecked)  // Start
         {
             GetPreferences();
-            loggingService.SetupAutoSendTimers();
-            loggingService.StartLogging();
+            if(!isBatteryLow()) {
+                loggingService.SetupAutoSendTimers();
+                loggingService.StartLogging();
+            }
+            else {
+                SetMainButtonChecked(false);
+                loggingService.SetStatus(getString(R.string.stopped_low_batt));
+                Toast.makeText(this, R.string.stopped_low_batt, Toast.LENGTH_LONG).show();
+            }
         }
         else            // Stop
         {
