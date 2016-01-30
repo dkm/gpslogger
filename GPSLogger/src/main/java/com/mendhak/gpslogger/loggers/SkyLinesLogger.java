@@ -28,6 +28,7 @@ package com.mendhak.gpslogger.loggers;
 import android.location.Location;
 import android.os.SystemClock;
 
+import com.mendhak.gpslogger.common.AppSettings;
 import com.mendhak.gpslogger.common.IActionListener;
 import com.mendhak.gpslogger.common.Utilities;
 import com.mendhak.gpslogger.loggers.utils.LocationBuffer;
@@ -143,7 +144,13 @@ public class SkyLinesLogger extends AbstractLiveLogger
             throws SocketException, UnknownHostException
     {
         super(intervals,minDistance);
-        Utilities.LogDebug("Skylines constructor");
+        Utilities.LogDebug("SkyLines constructor");
+        this.minbufsize= AppSettings.getALMinBufSize();
+//      TODO: better handling of minbufsize and MAX_BUFSIZE is needed - take the both from settings, put some filters on settings
+        if(this.minbufsize > this.maxbufsize/2) {
+            this.minbufsize = this.maxbufsize/2;
+            Utilities.LogDebug("minbufsize set too high, modified value is: " + this.minbufsize);
+        }
         this.key = key;
         this.intervalMS = intervals * 1000;
         this.serverport = port;

@@ -293,8 +293,17 @@
     <string name="started_waiting">GPS started, waiting for fix</string>
     <string name="gps_stopped">GPS paused</string>
     <string name="stopped">Stopped</string>
+    <string name="stopped_low_batt">Stopped low battery</string>
 
+    <string name="abst_logger_minbufsize_title">Send points by group</string>
+    <string name="abst_logger_minbufsize_summary">Minimum number of points in buffer to start sending</string>
+    <string name="abst_logger_minbufsize_dialog_title">Number of points in buffer</string>
+    <string name="abst_logger_minbufsize_hint">Number of points</string>
 
+    <string name="abst_logger_maxbufsize_title">Offline buffer size</string>
+    <string name="abst_logger_maxbufsize_summary">Number of points to save in buffer when sending is failed</string>
+    <string name="abst_logger_maxbufsize_dialog_title">Number of points in buffer</string>
+    <string name="abst_logger_maxbufsize_hint">Number of points</string>
 
     <string name="osm_setup_title">OpenStreetMap</string>
     <string name="osm_setup_summary">Set tags, description, visibility and authorization for uploading GPS Traces
@@ -441,8 +450,8 @@
     <string name="skylines_server_default">78.47.50.46</string>
     <string name="skylines_server_port_default">5597</string>
     <string name="skylines_key">Your pilot private key</string>
-    <string name="skylines_interval">Interval for sending data</string>
-    <string name="skylines_interval_summary">How often send data to SkyLines server</string>
+    <string name="skylines_interval">Tracking frequency, sec</string>
+    <string name="skylines_interval_summary">How often track GPS data</string>
     <string name="skylines_interval_default">3</string>
     <string name="skylines_distance_before_logging">Distance before logging</string>
     <string name="skylines_distance_before_logging_summary">How far to travel before logging the next point to SkyLines server. Use 0 to log all points.</string>
@@ -475,9 +484,9 @@
     <string name="livetrack24_password">Password</string>
     <string name="livetrack24_password_summary">Your Leonardo/FFVL/other password</string>
 
-    <string name="livetrack24_interval">Interval for sending data</string>
+    <string name="livetrack24_interval">Tracking frequency, sec</string>
     <string name="livetrack24_interval_default">3</string>
-    <string name="livetrack24_interval_summary">How often send data to Livetrack24 server</string>
+    <string name="livetrack24_interval_summary">How often track GPS data</string>
     <string name="livetrack24_distance_before_logging">Distance before logging</string>
     <string name="livetrack24_distance_before_logging_summary">How far to travel before logging the next point to Livetrack24 server. Use 0 to log all points.</string>
     <string name="livetrack24_distance_before_logging_default">10</string>
@@ -504,11 +513,12 @@
     <string name="opengts_server_communication_method">Communication Method</string>
     <string name="opengts_server_communication_method_summary">HTTP-based or Raw Socket Based communication</string>
     <string name="autoopengts_server_path">Server Path</string>
+    <string name="opengts_server_path_default">/gprmc/Data</string>
     <string name="autoopengts_server_path_summary">Optional and only for HTTP-based communication. For example \'/gprmc/Data\'</string>
     <string name="autoopengts_device_id">Device ID</string>
-    <string name="opengts_interval">Interval for sending data</string>
+    <string name="opengts_interval">Tracking frequency, sec</string>
     <string name="opengts_interval_default">60</string>
-    <string name="opengts_interval_summary">How often send data to OpenGTS server</string>
+    <string name="opengts_interval_summary">How often track GPS data</string>
     <string name="opengts_distance_before_logging">Distance before logging</string>
     <string name="opengts_distance_before_logging_summary">How far to travel before logging the next point to OpenGTS server. Use 0 to log all points.</string>
     <string name="opengts_distance_before_logging_default">10</string>
@@ -543,5 +553,9 @@
 
     <string name="faq_screen_title">Frequently asked questions</string>
     <string name="menu_faq">Help and FAQ</string>
+
+    <string name="confimport_button">Import</string>
+    <string name="confimport_activity_title">Import Config File</string>
+    <string name="confimport_show_failed">Failed to show configuration file content.</string>
 
 </resources>

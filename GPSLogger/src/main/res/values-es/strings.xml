@@ -205,6 +205,23 @@
   <string name="email_upload">Enviar por correo como fichero</string>
   <string name="autoemail_sendto_csv">Direcciones de email separadas por comas</string>
   <string name="autosend_enabled">Permitir envío automático</string>
+
+  <string name="log_skylines_title">Enviar seguimiento GPS al servidor SkyLines</string>
+  <string name="log_skylines_summary">Enviar seguimiento GPS al servidor SkyLines.</string>
+  <string name="skylines_enabled">Activar SkyLines</string>
+  <string name="skylines_enabled_summary">Activar este servidor SkyLines.</string>
+  <string name="skylines_server_category">Parámetros de servidor SkyLines</string>
+  <string name="skylines_interval">Frecuencia señalando, sec</string>
+  <string name="skylines_interval_summary">Frecuencia de recuperación de los datos de GPS</string>
+
+  <string name="log_livetrack24_summary">Enviar seguimiento GPS al servidor de live tracking (leonardo, FFVL, ...).</string>
+  <string name="livetrack24_setup_summary">Enviar seguimiento GPS al servidor livetrack24</string>
+  <string name="livetrack24_server_url">Servidor especial</string>
+  <string name="livetrack24_server_url_summary">URL personalizado</string>
+  <string name="livetrack24_preset_custom">Parámetros de otro servidor</string>
+  <string name="livetrack24_interval">Frecuencia señalando, sec</string>
+  <string name="livetrack24_interval_summary">Frecuencia de recuperación de los datos de GPS</string>
+
   <string name="opengts_enabled">Activar OpenGTS</string>
   <string name="opengts_enabled_summary">Activar este servidor OpenGTS.</string>
   <string name="autoopengts_autosend">Activar envío automático</string>
@@ -219,6 +236,8 @@
   <string name="opengts_server_communication_method">Método de comunicación</string>
   <string name="autoopengts_server_path">Ruta del servidor</string>
   <string name="autoopengts_device_id">Identificador de dispositivo</string>
+  <string name="opengts_interval">Frecuencia señalando, sec</string>
+  <string name="opengts_interval_summary">Frecuencia de recuperación de los datos de GPS</string>
   <string name="autoftp_server">Servidor FTP</string>
   <string name="autoftp_server_summary">Dirección IP o nombre de host</string>
   <string name="autoftp_username">Nombre de usuario</string>

@@ -30,6 +30,8 @@ import java.util.Date;
 import java.util.Locale;
 import java.util.TimeZone;
 
+import static java.lang.String.format;
+
 
 /**
  * OpenGTS Client
@@ -47,6 +49,11 @@ public class OpenGTSClient
     private AsyncHttpClient httpClient;
     private int locationsCount = 0;
     private int sentLocationsCount = 0;
+
+    private final static int MAX_RETRIES = 1;
+    private final static int RETRIES_TIMEOUT = 200; // ms
+    private final static int TIMEOUT = 3000;    // ms
+//    private final static int RESP_TIMEOUT = 2000;    // ms
 
 
     public OpenGTSClient(String server, Integer port, String path, IActionListener callback, Context applicationContext)
@@ -83,6 +90,8 @@ public class OpenGTSClient
             url.append(getURL());
 
             httpClient = new AsyncHttpClient();
+            httpClient.setTimeout(TIMEOUT);
+            httpClient.setMaxRetriesAndTimeout(MAX_RETRIES, RETRIES_TIMEOUT);
 
             for (Location loc : locations)
             {
@@ -93,7 +102,7 @@ public class OpenGTSClient
                 params.put("alt", String.valueOf(loc.getAltitude()));
 
 
-                Utilities.LogDebug("Sending URL " + url + " with params " + params.toString());
+                Utilities.LogDebug("OpenGTS client is sending URL " + url + " with params " + params.toString());
                 httpClient.get(applicationContext, url.toString(), params, new MyAsyncHttpResponseHandler(this));
             }
         }
@@ -173,7 +182,7 @@ public class OpenGTSClient
 
     public void OnFailure()
     {
-        httpClient.cancelRequests(applicationContext, true);
+        if(httpClient != null) httpClient.cancelRequests(applicationContext, true); // Can be null if call from outside before init or after free
         callback.OnFailure();
     }
 
@@ -191,7 +200,7 @@ public class OpenGTSClient
         DecimalFormatSymbols dfs = new DecimalFormatSymbols(Locale.US);
         DecimalFormat f = new DecimalFormat("0.000000", dfs);
 
-        String gprmc = String.format("%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,,",
+        String gprmc = format("%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,,",
                 "$GPRMC",
                 NMEAGPRMCTime(new Date(loc.getTime())),
                 "A",

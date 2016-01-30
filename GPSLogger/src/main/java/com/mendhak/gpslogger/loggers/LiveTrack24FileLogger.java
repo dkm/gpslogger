@@ -100,6 +100,23 @@ public class LiveTrack24FileLogger extends AbstractLiveLogger {
 //    long lastUpdateTime = SystemClock.elapsedRealtime();*****goes to superclass
 
     private static LiveTrack24FileLogger instance = null;
+    private final static int POINT_MAX_RETRIES = 1;
+    private final static int POINT_RETRIES_TIMEOUT = 200; // ms
+    private final static int POINT_TIMEOUT = 3000;    // ms
+    private final static int LOGIN_MAX_RETRIES = 3;
+    private final static int LOGIN_RETRIES_TIMEOUT = 500; // ms
+    private final static int LOGIN_TIMEOUT = 10000;    // ms
+//    private final static int RESP_TIMEOUT = 2000;    // ms
+
+    private final static int PACKET_START = 2;
+    private final static int PACKET_END = 3;
+    private final static int PACKET_POINT = 4;
+
+    static SyncHttpClient httpSyncClient = new SyncHttpClient();
+    static AsyncHttpClient httpAsyncClient = new AsyncHttpClient();
+
+    private boolean lastSendingOK = false;
+
 
     public boolean liveUpload(LocationBuffer.BufferedLocation b){
         // discard location if login not yet ready.
@@ -136,12 +153,20 @@ public class LiveTrack24FileLogger extends AbstractLiveLogger {
     private LiveTrack24FileLogger(String serverURL, String username,
                                   String password, int expectedInterval, int minDistance) throws MalformedURLException {
         super(expectedInterval,minDistance);
+        Utilities.LogDebug("livetrack24 constructor");
         this.ourVersion = AppSettings.getVersionName();
         this.vehicleName = AppSettings.getGliderName();
+
+        this.minbufsize= AppSettings.getALMinBufSize();
+//      TODO: better handling of minbufsize and MAX_BUFSIZE is needed - take the both from settings, put some filters on settings
+        if(this.minbufsize > this.maxbufsize/2) {
+            this.minbufsize = this.maxbufsize/2;
+            Utilities.LogDebug("minbufsize set too high, modified value is: " + this.minbufsize);
+        }
+
         if (this.vehicleName == null || this.vehicleName.trim().equals("")){
             this.vehicleName = "none";
         }
-        Utilities.LogDebug("livetrack24 constructor");
         URL url = new URL(serverURL + "/track.php");
         trackURL = url.toString();
         url = new URL(serverURL + "/client.php");
@@ -182,15 +207,6 @@ public class LiveTrack24FileLogger extends AbstractLiveLogger {
     public String getName() {
         return name;
     }
-
-    static int PACKET_START = 2; // FIXME, lookup java const syntax
-    static int PACKET_END = 3;
-    static int PACKET_POINT = 4;
-
-    static SyncHttpClient httpSyncClient = new SyncHttpClient();
-    static AsyncHttpClient httpAsyncClient = new AsyncHttpClient();
-
-    private boolean lastSendingOK = false;
 
     /**
      * Cleans up illegal chars in a URL
@@ -258,6 +274,8 @@ public class LiveTrack24FileLogger extends AbstractLiveLogger {
 
         params.put("cog", Integer.toString(bloc.bearing));
         params.put("tm", Integer.toString((int)(bloc.timems/1000)));
+        httpAsyncClient.setTimeout(POINT_TIMEOUT);
+        httpAsyncClient.setMaxRetriesAndTimeout(POINT_MAX_RETRIES, POINT_RETRIES_TIMEOUT);
 
         return sendPacket(PACKET_POINT, params, locationPacketHandler, false /* async */);
     }
@@ -311,8 +329,10 @@ public class LiveTrack24FileLogger extends AbstractLiveLogger {
                 params.put("trk1", Integer.toString(expectedIntervalSecs));
                 params.put("vtype", Integer.toString(vehicleType));
                 params.put("vname",vehicleName);
+                httpSyncClient.setTimeout(LOGIN_TIMEOUT);
+                httpSyncClient.setMaxRetriesAndTimeout(LOGIN_MAX_RETRIES, LOGIN_RETRIES_TIMEOUT);
 
-                sendPacket(PACKET_START, params, send_start_handler, true);
+                sendPacket(PACKET_START, params, send_start_handler, true /* sync */);
 //
 //                if (start_ok) {
 //                    login_ok = true;
@@ -364,13 +384,13 @@ public class LiveTrack24FileLogger extends AbstractLiveLogger {
         // The result of the page is an integer, 0 if userdata are incorrect, or
         // else the userID of the user
 
-//        AsyncHttpClient httpClient = new AsyncHttpClient();
-//        SyncHttpClient httpClient = new SyncHttpClient();
-
         RequestParams params = new RequestParams();
         params.put("op", "login");
         params.put("user", userName);
         params.put("pass", password);
+
+        httpAsyncClient.setTimeout(LOGIN_TIMEOUT);
+        httpAsyncClient.setMaxRetriesAndTimeout(LOGIN_MAX_RETRIES, LOGIN_RETRIES_TIMEOUT);
 
         Utilities.LogDebug("livetrack24: sending login info");
         httpAsyncClient.get(null, clientURL, params, new AsyncLoginHandler());

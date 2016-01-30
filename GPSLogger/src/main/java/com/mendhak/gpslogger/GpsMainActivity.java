@@ -75,6 +75,8 @@ public class GpsMainActivity extends SherlockFragmentActivity implements OnCheck
     private PrefsIO prefsio;
     private final int DIALOG_CHOOSE_FILE = 103;
 
+    public final static String CONF_DATA = "CONF_DATA_STRING";
+
     /**
      * Provides a connection to the GPS Logging Service
      */
@@ -83,6 +85,7 @@ public class GpsMainActivity extends SherlockFragmentActivity implements OnCheck
         @Override
         public void onServiceDisconnected(ComponentName name)
         {
+            Utilities.LogDebug("Service disconnected");
             loggingService = null;
         }
 
@@ -91,7 +94,7 @@ public class GpsMainActivity extends SherlockFragmentActivity implements OnCheck
         {
             loggingService = ((GpsLoggingService.GpsLoggingBinder) service).getService();
             GpsLoggingService.SetServiceClient(GpsMainActivity.this);
-
+            Utilities.LogDebug("Service successfully connected");
             if (Session.isStarted())
             {
                 SetMainButtonChecked(true);
@@ -120,15 +123,38 @@ public class GpsMainActivity extends SherlockFragmentActivity implements OnCheck
 
         setContentView(R.layout.main_fragment);
 
-        // Moved to onResume to update the list of loggers
-        //GetPreferences();
-//          Stays in onStart
-//        StartAndBindService();
+        Intent iin= getIntent();
+        Bundle ext = iin.getExtras();
+        String confImport = "";
+
+        if(ext!=null)
+        {
+            confImport = ext.getString(CONF_DATA);
+            if(confImport!=null) Utilities.LogInfo("Got string to import configuration data");
+                else confImport="";
+        }
 
         path = Environment.getExternalStorageDirectory() + File.separator + "GPSLogger";
         prefsio=new PrefsIO(this, PreferenceManager.getDefaultSharedPreferences(this), "gpslogger", path);
         this.registerReceiver(this.batteryInfoReceiver, new IntentFilter(Intent.ACTION_BATTERY_CHANGED));
-        serviceIntent = new Intent(this, GpsLoggingService.class);
+//        serviceIntent = new Intent(this, GpsLoggingService.class);
+        if(confImport.length() > 1) prefsio.ImportString(confImport);
+    }
+
+    @Override
+    protected void onNewIntent(Intent iin)
+    {
+        Bundle ext = iin.getExtras();
+        String confImport = "";
+
+        if(ext!=null)
+        {
+            confImport = ext.getString(CONF_DATA);
+            if(confImport!=null) {
+                Utilities.LogInfo("Got string to import configuration data");
+                prefsio.ImportString(confImport);
+            }
+        }
     }
 
     @Override
@@ -136,8 +162,6 @@ public class GpsMainActivity extends SherlockFragmentActivity implements OnCheck
     {
         Utilities.LogDebug("GpsMainActivity.onStart");
         super.onStart();
-//          Stays in onResume
-//        StartAndBindService();
     }
 
     @Override
@@ -296,10 +320,29 @@ public class GpsMainActivity extends SherlockFragmentActivity implements OnCheck
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         if( (requestCode==prefsio.ACTIVITY_CHOOSE_FILE) && (resultCode == RESULT_OK) ) {
             Uri uri = data.getData();
-            String str=uri.getPath();
-            prefsio.SetCurFileName(str);
-            prefsio.ImportFile();
+
+            Intent intent = new Intent(this, ConfImportActivity.class);
+            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+            intent.setData(uri);
+            startActivity(intent);
+//            String str=uri.getPath();
+//            prefsio.SetCurFileName(str);
+//            prefsio.ImportFile();
         }
+    }
+
+    private boolean isBatteryLow() {
+        Intent intent  = this.registerReceiver(null, new IntentFilter(Intent.ACTION_BATTERY_CHANGED));
+        int plugged= intent.getIntExtra(BatteryManager.EXTRA_PLUGGED, 0);
+        if(plugged!=0) return false;
+        int level   = intent.getIntExtra(BatteryManager.EXTRA_LEVEL, 0);
+        int scale   = intent.getIntExtra(BatteryManager.EXTRA_SCALE, 100);
+        int percent = (level*100)/scale;
+        if(percent<=AppSettings.getCritBattLevel()) {
+            Utilities.LogDebug("Cannot start logging - battery level equal or below critical");
+            return true;
+        }
+        return false;
     }
 
     private BroadcastReceiver batteryInfoReceiver = new BroadcastReceiver() {
@@ -319,7 +362,7 @@ public class GpsMainActivity extends SherlockFragmentActivity implements OnCheck
                     SetMainButtonChecked(false);
 //                    ShowPreferencesSummary();
                     loggingService.stopSelf();
-                    loggingService.SetStatus(getString(R.string.stopped));
+                    loggingService.SetStatus(getString(R.string.stopped_low_batt));
                 }
             }
         }
@@ -330,23 +373,28 @@ public class GpsMainActivity extends SherlockFragmentActivity implements OnCheck
     private void StartAndBindService()
     {
         Utilities.LogDebug("StartAndBindService - binding now");
-        if(isServiceRunning(GpsLoggingService.class))
+        serviceIntent = new Intent(this, GpsLoggingService.class);
+        if(!isServiceRunning(GpsLoggingService.class))
         {
-            Utilities.LogDebug("Seems that the service is already running");
-            if(Session.isBoundToService()) return;
-                else
-                {
-                    Utilities.LogDebug("Seems that the service is running but not binded - stopping the service");
-                    StopAndUnbindServiceIfRequired();
-                }
+            // Start the service in case it isn't already running
+            Utilities.LogDebug("Trying to start service");
+            startService(serviceIntent);
+            Session.setBoundToService(false);
         }
-//        Goes to onCreate
-//        serviceIntent = new Intent(this, GpsLoggingService.class);
-        // Start the service in case it isn't already running
-        startService(serviceIntent);
+        else {
+            Utilities.LogDebug("Seems that the service is already running");
+            if (Session.isBoundToService() && (loggingService != null)) return;
+            else {
+                Utilities.LogDebug("Seems that the service is running but not bound");
+//                    StopAndUnbindServiceIfRequired();
+            }
+        }
         // Now bind to service
-        bindService(serviceIntent, gpsServiceConnection, Context.BIND_AUTO_CREATE);
-        Session.setBoundToService(true);
+        Utilities.LogDebug("Trying to bind to service");
+        if(bindService(serviceIntent, gpsServiceConnection, Context.BIND_AUTO_CREATE)) {
+            Utilities.LogDebug("Successfully bound to service");
+            Session.setBoundToService(true);
+        }
     }
 
     /**
@@ -386,7 +434,7 @@ public class GpsMainActivity extends SherlockFragmentActivity implements OnCheck
     {
 
         Utilities.LogDebug("GpsMainActivity.onPause");
-        StopAndUnbindServiceIfRequired();
+//        StopAndUnbindServiceIfRequired();
         super.onPause();
     }
 
@@ -408,13 +456,20 @@ public class GpsMainActivity extends SherlockFragmentActivity implements OnCheck
     {
         Utilities.LogDebug("GpsMainActivity.onCheckedChanged");
 
-        if (isChecked)
+        if (isChecked)  // Start
         {
             GetPreferences();
-            loggingService.SetupAutoSendTimers();
-            loggingService.StartLogging();
+            if(!isBatteryLow()) {
+                loggingService.SetupAutoSendTimers();
+                loggingService.StartLogging();
+            }
+            else {
+                SetMainButtonChecked(false);
+                loggingService.SetStatus(getString(R.string.stopped_low_batt));
+                Toast.makeText(this, R.string.stopped_low_batt, Toast.LENGTH_LONG).show();
+            }
         }
-        else
+        else            // Stop
         {
             loggingService.StopLogging();
             ShowPreferencesSummary();

@@ -105,6 +105,8 @@ public class AutoEmailHelper implements IActionListener, IFileSender
     public boolean accept(File dir, String name)
     {
         return name.toLowerCase().endsWith(".zip")
+                || name.toLowerCase().endsWith(".csv")
+                || name.toLowerCase().endsWith(".log")
                 || name.toLowerCase().endsWith(".gpx")
                 || name.toLowerCase().endsWith(".igc")
                 || name.toLowerCase().endsWith(".kml");

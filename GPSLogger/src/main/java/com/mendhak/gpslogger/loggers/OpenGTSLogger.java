@@ -62,6 +62,13 @@ public class OpenGTSLogger extends AbstractLiveLogger
     public OpenGTSLogger(int minsec, int mindist)
     {
         super(minsec,mindist);
+        Utilities.LogDebug("OpenGTS constructor");
+        this.minbufsize= AppSettings.getALMinBufSize();
+//      TODO: better handling of minbufsize and MAX_BUFSIZE is needed - take the both from settings, put some filters on settings
+        if(this.minbufsize > this.maxbufsize/2) {
+            this.minbufsize = this.maxbufsize/2;
+            Utilities.LogDebug("minbufsize set too high, modified value is: " + this.minbufsize);
+        }
     }
 
     @Override
@@ -73,6 +80,7 @@ public class OpenGTSLogger extends AbstractLiveLogger
         OpenGTSClient openGTSClient = new OpenGTSClient(server, port, path, al, null);
         uploadFinished=false;
         uploadOK=false;
+        Utilities.LogDebug("OpenGTS liveUpload is trying to send location");
         startUploadTimer();
         openGTSClient.sendHTTP(deviceId, bloc.toLocation() );
         while ( (!uploadFinished) && (!isTimedOutUpload()) ) {
@@ -82,6 +90,11 @@ public class OpenGTSLogger extends AbstractLiveLogger
                 e.printStackTrace();
             }
         }
+        if(!uploadFinished) {   // Timed out
+            Utilities.LogDebug("Cancelling OpenGTS liveUpload by timeout");
+            openGTSClient.OnFailure();
+        }
+        Utilities.LogDebug("OpenGTS liveUpload finished sending location");
         return uploadOK;
     }
 
