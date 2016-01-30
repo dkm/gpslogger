@@ -23,14 +23,11 @@ android {
 
     buildTypes {
         releaseSigned {
-            runProguard false
-            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.txt'
+
             signingConfig signingConfigs.release
         }
 
         releaseUnsigned {
-            runProguard false
-            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.txt'
         }
 
     }
