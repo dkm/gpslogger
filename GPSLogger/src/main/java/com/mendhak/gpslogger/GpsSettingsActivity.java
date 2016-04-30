@@ -410,7 +410,7 @@ public class GpsSettingsActivity extends SherlockPreferenceActivity
 
             if (chkLog_opengts.isChecked() && !opengts_enabled)
             {
-                startActivity(new Intent("com.mendhak.gpslogger.OPENGTS_SETUP"));
+                startActivity(new Intent("net.kataplop.gpslogger.OPENGTS_SETUP"));
             }
             return true;
         }
@@ -436,7 +436,7 @@ public class GpsSettingsActivity extends SherlockPreferenceActivity
 
             if (chkLog_skylines.isChecked() && !skylines_enabled)
             {
-                startActivity(new Intent("com.mendhak.gpslogger.SKYLINES_SETUP"));
+                startActivity(new Intent("net.kataplop.gpslogger.SKYLINES_SETUP"));
             }
             return true;
         }
@@ -463,7 +463,7 @@ public class GpsSettingsActivity extends SherlockPreferenceActivity
 
             if (chkLog_livetrack24.isChecked() && !livetrack24_enabled)
             {
-                startActivity(new Intent("com.mendhak.gpslogger.LIVETRACK24_SETUP"));
+                startActivity(new Intent("net.kataplop.gpslogger.LIVETRACK24_SETUP"));
             }
             return true;
         }

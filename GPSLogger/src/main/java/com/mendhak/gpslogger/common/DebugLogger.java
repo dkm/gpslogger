@@ -76,7 +76,7 @@ class DebugLogWriter implements Runnable
             BufferedOutputStream logOutputStream = new BufferedOutputStream(
                     logStream);
             FileLock lock = logStream.getChannel().lock();
-            DateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
+            DateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss.SSS");
             Date date = new Date();
             String dateString = dateFormat.format(date);
 

@@ -35,9 +35,11 @@ import com.loopj.android.http.RequestParams;
 import com.loopj.android.http.SyncHttpClient;
 import com.loopj.android.http.TextHttpResponseHandler;
 import com.mendhak.gpslogger.common.AppSettings;
+import com.mendhak.gpslogger.common.IActionListener;
 import com.mendhak.gpslogger.common.Utilities;
 import com.mendhak.gpslogger.loggers.utils.LocationBuffer;
 
+import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.HashMap;
@@ -98,17 +100,35 @@ public class LiveTrack24FileLogger extends AbstractLiveLogger {
 //    long lastUpdateTime = SystemClock.elapsedRealtime();*****goes to superclass
 
     private static LiveTrack24FileLogger instance = null;
+    private final static int POINT_MAX_RETRIES = 1;
+    private final static int POINT_RETRIES_TIMEOUT = 200; // ms
+    private final static int POINT_TIMEOUT = 3000;    // ms
+    private final static int LOGIN_MAX_RETRIES = 3;
+    private final static int LOGIN_RETRIES_TIMEOUT = 500; // ms
+    private final static int LOGIN_TIMEOUT = 10000;    // ms
+//    private final static int RESP_TIMEOUT = 2000;    // ms
+
+    private final static int PACKET_START = 2;
+    private final static int PACKET_END = 3;
+    private final static int PACKET_POINT = 4;
+
+    static SyncHttpClient httpSyncClient = new SyncHttpClient();
+    static AsyncHttpClient httpAsyncClient = new AsyncHttpClient();
+
+    private boolean lastSendingOK = false;
+
 
     public boolean liveUpload(LocationBuffer.BufferedLocation b){
         // discard location if login not yet ready.
         if (!login_ok){
             return true;
         }
-
+        lastSendingOK=false;
+        startUploadTimer();
         RequestHandle rh = sendLocationPacket(b);
-        while (!rh.isFinished()){
+        while( (!rh.isFinished()) && (!isTimedOutUpload()) ) {
             try {
-                Thread.sleep(10);
+                Thread.sleep(sleepTimeUpload);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
@@ -133,16 +153,26 @@ public class LiveTrack24FileLogger extends AbstractLiveLogger {
     private LiveTrack24FileLogger(String serverURL, String username,
                                   String password, int expectedInterval, int minDistance) throws MalformedURLException {
         super(expectedInterval,minDistance);
+        Utilities.LogDebug("livetrack24 constructor");
         this.ourVersion = AppSettings.getVersionName();
         this.vehicleName = AppSettings.getGliderName();
+
+        this.minbufsize= AppSettings.getALMinBufSize();
+//      TODO: better handling of minbufsize and MAX_BUFSIZE is needed - take the both from settings, put some filters on settings
+        if(this.minbufsize > this.maxbufsize/2) {
+            this.minbufsize = this.maxbufsize/2;
+            Utilities.LogDebug("minbufsize set too high, modified value is: " + this.minbufsize);
+        }
+
         if (this.vehicleName == null || this.vehicleName.trim().equals("")){
             this.vehicleName = "none";
         }
-        Utilities.LogDebug("livetrack24 constructor");
         URL url = new URL(serverURL + "/track.php");
         trackURL = url.toString();
         url = new URL(serverURL + "/client.php");
         clientURL = url.toString();
+        Utilities.LogDebug("trackURL: "+trackURL);
+        Utilities.LogDebug("clientURL: "+clientURL);
 
         this.userName = username;
         this.password = password;
@@ -178,15 +208,6 @@ public class LiveTrack24FileLogger extends AbstractLiveLogger {
         return name;
     }
 
-    static int PACKET_START = 2; // FIXME, lookup java const syntax
-    static int PACKET_END = 3;
-    static int PACKET_POINT = 4;
-
-    static SyncHttpClient httpSyncClient = new SyncHttpClient();
-    static AsyncHttpClient httpAsyncClient = new AsyncHttpClient();
-
-    private boolean lastSendingOK = false;
-
     /**
      * Cleans up illegal chars in a URL
      *
@@ -200,13 +221,13 @@ public class LiveTrack24FileLogger extends AbstractLiveLogger {
     private AsyncHttpResponseHandler locationPacketHandler = new TextHttpResponseHandler() {
         @Override
         public void onSuccess(int statusCode, org.apache.http.Header[] headers, String message){
-            Utilities.LogDebug("packet sent ok:" + message);
+            Utilities.LogDebug("livetrack24: packet sent ok:" + message);
             lastSendingOK = true;
         }
 
         @Override
         public void onFailure(String response, Throwable e){
-            Utilities.LogDebug("packet NOT sent:" + response);
+            Utilities.LogDebug("livetrack24: packet NOT sent:" + response);
             lastSendingOK = false;
         }
     };
@@ -226,7 +247,7 @@ public class LiveTrack24FileLogger extends AbstractLiveLogger {
         nparams.put("leolive", Integer.toString(packetType));
         nparams.put("sid", sessionId);
         nparams.put("pid", Integer.toString(packetNum));
-        Utilities.LogDebug("URL: " + nparams.toString());
+        Utilities.LogDebug("livetrack24: URL: "+trackURL+" nparams: " + nparams.toString());
         packetNum++;
 
         if (async){
@@ -247,9 +268,14 @@ public class LiveTrack24FileLogger extends AbstractLiveLogger {
         params.put("lat", Float.toString((float)bloc.lat));
         params.put("lon", Float.toString((float)bloc.lon));
         params.put("alt", Integer.toString(bloc.altitude));
-        params.put("sog", Double.toString(bloc.speed * 3.6));
+
+	// Was "buffered speed is in m/s, lt24 needs km/h"
+        params.put("sog", Float.toString(bloc.speed/(float)3.6));   // Convert to m/s before sending
+
         params.put("cog", Integer.toString(bloc.bearing));
         params.put("tm", Integer.toString((int)(bloc.timems/1000)));
+        httpAsyncClient.setTimeout(POINT_TIMEOUT);
+        httpAsyncClient.setMaxRetriesAndTimeout(POINT_MAX_RETRIES, POINT_RETRIES_TIMEOUT);
 
         return sendPacket(PACKET_POINT, params, locationPacketHandler, false /* async */);
     }
@@ -303,8 +329,10 @@ public class LiveTrack24FileLogger extends AbstractLiveLogger {
                 params.put("trk1", Integer.toString(expectedIntervalSecs));
                 params.put("vtype", Integer.toString(vehicleType));
                 params.put("vname",vehicleName);
+                httpSyncClient.setTimeout(LOGIN_TIMEOUT);
+                httpSyncClient.setMaxRetriesAndTimeout(LOGIN_MAX_RETRIES, LOGIN_RETRIES_TIMEOUT);
 
-                sendPacket(PACKET_START, params, send_start_handler, true);
+                sendPacket(PACKET_START, params, send_start_handler, true /* sync */);
 //
 //                if (start_ok) {
 //                    login_ok = true;
@@ -320,7 +348,7 @@ public class LiveTrack24FileLogger extends AbstractLiveLogger {
 
         @Override
         public void onFailure(String response, Throwable e) {
-            Utilities.LogDebug("livetrack24: login resp failed");
+            Utilities.LogDebug("livetrack24: login response failed");
             delayedDoLogin(1000);
         }
     }
@@ -356,13 +384,13 @@ public class LiveTrack24FileLogger extends AbstractLiveLogger {
         // The result of the page is an integer, 0 if userdata are incorrect, or
         // else the userID of the user
 
-//        AsyncHttpClient httpClient = new AsyncHttpClient();
-//        SyncHttpClient httpClient = new SyncHttpClient();
-
         RequestParams params = new RequestParams();
         params.put("op", "login");
         params.put("user", userName);
         params.put("pass", password);
+
+        httpAsyncClient.setTimeout(LOGIN_TIMEOUT);
+        httpAsyncClient.setMaxRetriesAndTimeout(LOGIN_MAX_RETRIES, LOGIN_RETRIES_TIMEOUT);
 
         Utilities.LogDebug("livetrack24: sending login info");
         httpAsyncClient.get(null, clientURL, params, new AsyncLoginHandler());

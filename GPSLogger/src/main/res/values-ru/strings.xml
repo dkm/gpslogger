@@ -227,7 +227,19 @@
   <string name="started_waiting">GPS запущен, ожидаем координаты</string>
   <string name="gps_stopped">GPS приостановлен</string>
   <string name="stopped">Остановлено</string>
-  <string name="osm_setup_title">OpenStreetMap</string>
+  <string name="stopped_low_batt">Остановлено разряжена батарея</string>
+
+  <string name="abst_logger_minbufsize_title">Групповая отправка точек</string>
+  <string name="abst_logger_minbufsize_summary">Минимальное количество точек в буфере для начала отправки</string>
+  <string name="abst_logger_minbufsize_dialog_title">Количество точек в буфере</string>
+  <string name="abst_logger_minbufsize_hint">Количество точек</string>
+
+  <string name="abst_logger_maxbufsize_title">Размер буфера</string>
+  <string name="abst_logger_maxbufsize_summary">Максимальное количество точек в буфере во время отсутствия подключения</string>
+  <string name="abst_logger_maxbufsize_dialog_title">Количество точек в буфере</string>
+  <string name="abst_logger_maxbufsize_hint">Количество точек</string>
+
+    <string name="osm_setup_title">OpenStreetMap</string>
   <string name="osm_setup_summary">Добавляйте теги, описания GPS трекам</string>
   <string name="osm_preferences_title">Настройки OpenStreetMap</string>
   <string name="osm_lbl_authorize">Авторизовать приложение</string>
@@ -332,12 +344,9 @@
     <string name="skylines_server">Сервер</string>
     <string name="skylines_server_summary">Имя или IP адрес сервера</string>
     <string name="skylines_server_port">Порт</string>
-    <string name="skylines_server_default">78.47.50.46</string>
-    <string name="skylines_server_port_default">5597</string>
     <string name="skylines_key">Ключ доступа</string>
-    <string name="skylines_interval">Интервал отправки данных</string>
-    <string name="skylines_interval_summary">Частота отправки точек на сервер</string>
-    <string name="skylines_interval_default">3</string>
+    <string name="skylines_interval">Интервал позиционирования, сек</string>
+    <string name="skylines_interval_summary">Частота запроса координат GPS</string>
     <string name="skylines_distance_before_logging">Дистанция отправки точек</string>
     <string name="skylines_distance_before_logging_summary">Минимальное пройденное расстояние для отправки точек. Используйте 0 для отправки всех точек.</string>
     <string name="skylines_distance_before_logging_default">10</string>
@@ -368,9 +377,8 @@
     <string name="livetrack24_password">Пароль</string>
     <string name="livetrack24_password_summary">Пароль для сервера Leonardo/FFVL/other</string>
 
-    <string name="livetrack24_interval">Интервал отправки данных</string>
-    <string name="livetrack24_interval_default">3</string>
-    <string name="livetrack24_interval_summary">Частота отправки точек на сервер</string>
+    <string name="livetrack24_interval">Интервал позиционирования, сек</string>
+    <string name="livetrack24_interval_summary">Частота запроса координат GPS</string>
     <string name="livetrack24_distance_before_logging">Дистанция отправки точек</string>
     <string name="livetrack24_distance_before_logging_summary">Минимальное пройденное расстояние для отправки точек. Используйте 0 для отправки всех точек.</string>
     <string name="livetrack24_distance_before_logging_default">10</string>
@@ -399,9 +407,8 @@
   <string name="autoopengts_server_path">Путь на сервере</string>
   <string name="autoopengts_server_path_summary">Опционально, только для способа связи на основе протокола HTTP. Например, \'/gprmc/Data\'</string>
   <string name="autoopengts_device_id">Идентификатор устройства</string>
-  <string name="opengts_interval">Интервал отправки данных</string>
-  <string name="opengts_interval_default">60</string>
-  <string name="opengts_interval_summary">Частота отправки точек на сервер</string>
+  <string name="opengts_interval">Интервал позиционирования, сек</string>
+  <string name="opengts_interval_summary">Частота запроса координат GPS</string>
   <string name="opengts_distance_before_logging">Дистанция отправки точек</string>
   <string name="opengts_distance_before_logging_summary">Минимальное пройденное расстояние для отправки точек. Используйте 0 для отправки всех точек.</string>
   <string name="opengts_distance_before_logging_default">10</string>

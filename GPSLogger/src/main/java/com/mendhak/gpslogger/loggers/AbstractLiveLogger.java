@@ -5,21 +5,31 @@ import android.location.Location;
 import android.os.AsyncTask;
 import android.os.Handler;
 
+// import com.mendhak.gpslogger.common.AppSettings;
+import com.mendhak.gpslogger.common.AppSettings;
+import com.mendhak.gpslogger.common.IActionListener;
 import com.mendhak.gpslogger.common.Utilities;
 import com.mendhak.gpslogger.loggers.utils.LocationBuffer;
 
 import java.io.IOException;
 
 public abstract class AbstractLiveLogger extends AbstractLogger {
-    private final LocationBuffer loc_buffer = new LocationBuffer();
+    protected final LocationBuffer loc_buffer = new LocationBuffer();
+    protected final static long maxWaitUpload = 10000; // Upload will be failed if longs more than maxWaitUpload millisecsec
+    protected long timeStartUpload;
+    protected final static int sleepTimeUpload = 100;  // Time to sleep for upload thread waiting for upload (one cycle)
+    protected int minbufsize=0; // Should be set by child class if needed
+    protected int maxbufsize=32;
+    protected int MAX_TRY=3;
+    protected int MAX_SEND_FAILED=5;
 
     private Runnable flusher;
-    private Handler handler;
+// **** Handler removed by Peter 01/11/2014 - replaced by execAsyncFlush() call in Write method
+//    private Handler handler;
     private FlusherAsyncTask flushertask;
     private boolean loggerIsClosing = false;
 
     private static String name = "AbstractLiveLogger";
-
     public abstract boolean liveUpload(LocationBuffer.BufferedLocation bloc) throws IOException;
 
     /**
@@ -31,14 +41,15 @@ public abstract class AbstractLiveLogger extends AbstractLogger {
 
     public AbstractLiveLogger(final int minsec, final int mindist){
         super(minsec, mindist);
+        maxbufsize= AppSettings.getALMaxBufSize();
 
-        this.handler = new Handler();
+//        this.handler = new Handler();
 
         flusher = new Runnable() {
             @Override
             public void run() {
                 execAsyncFlush();
-                handler.postDelayed(flusher, minsec * 1000);
+//                handler.postDelayed(flusher, minsec * 1000);
             }
         };
         flusher.run();
@@ -49,25 +60,43 @@ public abstract class AbstractLiveLogger extends AbstractLogger {
         protected Void doInBackground(LocationBuffer... buffers) {
             for (LocationBuffer buf : buffers){
                 LocationBuffer.BufferedLocation b;
-
-                Utilities.LogDebug(name + " flushing buffer (" + buf.size() + ")");
-                int i = 0;
-
-                while((b = buf.peek()) != null) {
-                    try {
-                        Utilities.LogDebug(name + " flushing elt " + i);
-                        Utilities.LogDebug("TIME: " + b.timems);
-                        if (liveUpload(b)){
-                            buf.pop();
-                            i++;
-                        } else {
-                            Utilities.LogDebug(name + " failed flush elt " + i);
-                        }
-                    } catch (IOException ex) {
-                        Utilities.LogDebug(name + ": sending fix", ex);
-                    }
+                int bufsize=buf.size();
+                Utilities.LogDebug(name + " flushing buffer (" + bufsize + ")");
+                int i=0;
+                int sent=0, failed=0;
+                int maxtry=MAX_TRY;
+                // TODO: ignore skipping by minbufsize using timeout (got from user settings)
+                if ( (bufsize < minbufsize) && (!loggerIsClosing) ) {
+                    Utilities.LogDebug(name + " flushing aborted: minbufsize=" + minbufsize);
+                    return null;
                 }
-                Utilities.LogDebug(name + ": finished flushing " + i + " locations" );
+                do {
+                    sent=0;
+                    failed=0;
+                    for (i = 0; i < bufsize; i++) {
+                        try {
+                            b = buf.peek();
+                            if (b == null) break;
+                            Utilities.LogDebug(name + " flushing elt " + i);
+                            Utilities.LogDebug("flushing location time: " + b.timems);
+
+                            if (liveUpload(b)) {
+                                buf.pop();
+                                sent++;
+                            } else {
+                                Utilities.LogDebug(name + " failed flush elt " + i);
+                                failed++;
+                            }
+                        } catch (IOException ex) {
+                            Utilities.LogDebug(name + ": sending fix", ex);
+                            failed++;
+                        }
+                        if(failed>MAX_SEND_FAILED) break;
+                    }
+                    Utilities.LogDebug(name + ": finished flushing " + i + " locations");
+                    maxtry--;
+                    bufsize=buf.size();
+                } while( (maxtry>0) && (sent>0) && (bufsize>0) );  // Trying to flush new locations if liveUpload was successful
             }
             return null;
         }
@@ -102,7 +131,7 @@ public abstract class AbstractLiveLogger extends AbstractLogger {
 
     @Override
     public void close() throws Exception{
-        this.handler.removeCallbacks(flusher);
+//        this.handler.removeCallbacks(flusher);
         loggerIsClosing = true;
         execAsyncFlush();
     }
@@ -112,6 +141,12 @@ public abstract class AbstractLiveLogger extends AbstractLogger {
     {
 //        final long now = SystemClock.elapsedRealtime();
 //        calendar.setTimeInMillis(loc.getTime());
+        int bufsize=loc_buffer.size();
+        if (bufsize > maxbufsize) {
+            Utilities.LogDebug(name  + " cannot push: bufsize= " + bufsize + " > "+maxbufsize);
+            Utilities.LogDebug(name  + " deleting the oldest point");
+            loc_buffer.pop();
+        }
         SetLatestTimeStamp(System.currentTimeMillis());
         // get time from system, not location: prevent emulator problem with wrong date
         // in simulated location
@@ -127,7 +162,7 @@ public abstract class AbstractLiveLogger extends AbstractLogger {
                 loc.getLatitude(), loc.getLongitude(),
                 (int)loc.getAltitude(),
                 (int)loc.getBearing(),
-                (int)(loc.getSpeed())
+                loc.getSpeed()
         );
         Utilities.LogDebug(name  + " pushed (" + loc_buffer.size() + ")");
 
@@ -136,5 +171,17 @@ public abstract class AbstractLiveLogger extends AbstractLogger {
 //            new WriteAsync().execute(loc);
 //            nextUpdateTime = now + intervalMS;
 //        }
+// *** Added by Peter 01/11/2014 ***
+        execAsyncFlush();
+    }
+
+    protected void startUploadTimer() {
+        timeStartUpload=System.currentTimeMillis();
+    }
+
+    protected boolean isTimedOutUpload() {
+        long timeCurrent=System.currentTimeMillis();
+        if( (timeCurrent-timeStartUpload)> maxWaitUpload ) return true;
+            else return false;
     }
 }

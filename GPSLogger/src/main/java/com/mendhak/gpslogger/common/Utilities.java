@@ -345,6 +345,25 @@ public class Utilities
         } catch (Exception e) {
             AppSettings.setCritBattLevel(critical_battery_level_default);
         }
+
+        final int al_minbufsize_default = 1;
+
+        try {
+            AppSettings.setALMinBufSize(Integer.parseInt(prefs.getString("abst_logger_minbufsize",
+                    Integer.toString(al_minbufsize_default))));
+        } catch (Exception e) {
+            AppSettings.setALMinBufSize(al_minbufsize_default);
+        }
+
+        final int al_maxbufsize_default = 32;
+
+        try {
+            AppSettings.setALMaxBufSize(Integer.parseInt(prefs.getString("abst_logger_maxbufsize",
+                    Integer.toString(al_maxbufsize_default))));
+        } catch (Exception e) {
+            AppSettings.setALMaxBufSize(al_maxbufsize_default);
+        }
+
     }
 
     public static void ShowProgress(Context ctx, String title, String message)
